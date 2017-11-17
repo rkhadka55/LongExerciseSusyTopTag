@@ -18,7 +18,6 @@ def mainXGB(options):
   fname = "variables.json"
   try:
     with open(options.directory + fname,"w") as f:
-      print "HI"
       json.dump(allVars, f, sort_keys=True, indent=4)
   except IOError:
     print "Unable to save configuration to",fname

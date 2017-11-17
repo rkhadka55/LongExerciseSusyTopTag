@@ -22,7 +22,6 @@ def mainXGB(options):
   except IOError:
     print "Unable to save configuration to",fname
     
-  return
   # Import data
   dg = DataGetter(allVars)
   trainData = dg.importData(samplesToRun = tuple(glob(options.dataFilePath + "/trainingTuple_TTbarSingleLepT*_0_division_0_TTbarSingleLepT*_training_0.h5")), prescale=True, ptReweight=False)

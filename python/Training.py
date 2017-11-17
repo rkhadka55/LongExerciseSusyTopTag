@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
   #We add the following options in order to run things other than tensorflow
   parser.add_option ('-d', "--directory",     dest='directory',     action='store',                    help="Directory to store outputs (default .)")
-  parser.add_option ('-f', "--dataFilePath", dest="dataFilePath", action='store', default="/uscms_data/d3/pastika/DAS2018/CMSSW_8_0_26_patch1/src/TopTagger/Tools/data", help="Path where the input datafiles are stored")
+  parser.add_option ('-f', "--dataFilePath",  dest="dataFilePath",  action='store', default="data",    help="Path where the input datafiles are stored")
 
   options, args = parser.parse_args()
 

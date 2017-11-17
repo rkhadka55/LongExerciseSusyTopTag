@@ -15,7 +15,7 @@ parser = optparse.OptionParser("usage: %prog [options]\n")
 
 parser.add_option ('-c', "--disc",         dest='discCut',      action='store', default=0.6, type=float, help="Discriminator cut")
 parser.add_option ('-a', "--mvaFile",      dest='mvaFile',      action='store', default="",              help="Mva training file")
-parser.add_option ('-f', "--dataFilePath", dest="dataFilePath", action='store', default="/uscms_data/d3/pastika/DAS2018/CMSSW_8_0_26_patch1/src/TopTagger/Tools/data", help="Path where the input datafiles are stored")
+parser.add_option ('-f', "--dataFilePath", dest="dataFilePath", action='store', default="data",          help="Path where the input datafiles are stored")
 parser.add_option ('-d', "--directory",    dest='directory',    action='store', default="",              help="Directory to store outputs")
  
 options, args = parser.parse_args()
@@ -31,7 +31,6 @@ if len(options.directory):
       else:
           raise
 
-  
 #disc cut
 discCut = options.discCut
 

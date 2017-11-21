@@ -1,8 +1,7 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Tue Nov 21 11:32:52 2017 by ROOT version 6.10/05
-// from TTree slimmedTuple/susyTopTagging0_TTbarSingleLepT.rootslimmedTuple
-// found on file: /uscms_data/d3/pastika/DAS2018/CMSSW_9_3_3/src/TopTagger/Tools/susyTopTagging0_TTbarSingleLepT.root
+// Tue Nov 21 14:25:55 2017 by ROOT version 6.10/05
+// from TChain slimmedTuple/
 //////////////////////////////////////////////////////////
 
 #ifndef SimpleAnalyzer_h
@@ -30,7 +29,7 @@ public :
    Double_t        TriggerEffMC;
    vector<TLorentzVector> *cutElecVec;
    vector<TLorentzVector> *cutMuVec;
-   vector<TLorentzVector> *jetsLVec;
+   vector<TLorentzVector> *jetsLVec_slimmed;
    Double_t        met;
    Double_t        metphi;
    Bool_t          passBJets;
@@ -41,27 +40,27 @@ public :
    Bool_t          passSearchTrigger;
    Bool_t          passdPhis;
    Bool_t          passnJets;
-   vector<TLorentzVector> *puppiJetsLVec;
-   vector<TLorentzVector> *puppiSubJetsLVec;
-   vector<double>  *puppisoftDropMass;
-   vector<double>  *puppitau1;
-   vector<double>  *puppitau2;
-   vector<double>  *puppitau3;
-   vector<double>  *qgAxis2;
-   vector<double>  *qgLikelihood;
-   vector<int>     *qgMult;
-   vector<double>  *qgPtD;
-   vector<double>  *recoJetsBtag_0;
-   vector<double>  *recoJetschargedEmEnergyFraction;
-   vector<double>  *recoJetschargedHadronEnergyFraction;
-   vector<double>  *recoJetsneutralEmEnergyFraction;
+   vector<TLorentzVector> *puppiJetsLVec_slimmed;
+   vector<vector<TLorentzVector> > *puppiSubJetsLVec_slimmed;
+   vector<double>  *puppisoftDropMass_slimmed;
+   vector<double>  *puppitau1_slimmed;
+   vector<double>  *puppitau2_slimmed;
+   vector<double>  *puppitau3_slimmed;
+   vector<double>  *qgAxis2_slimmed;
+   vector<double>  *qgLikelihood_slimmed;
+   vector<double>  *qgMult_slimmed;
+   vector<double>  *qgPtD_slimmed;
+   vector<double>  *recoJetsBtag_slimmed;
+   vector<double>  *recoJetschargedEmEnergyFraction_slimmed;
+   vector<double>  *recoJetschargedHadronEnergyFraction_slimmed;
+   vector<double>  *recoJetsneutralEmEnergyFraction_slimmed;
 
    // List of branches
    TBranch        *b_HT;   //!
    TBranch        *b_TriggerEffMC;   //!
    TBranch        *b_cutElecVec;   //!
    TBranch        *b_cutMuVec;   //!
-   TBranch        *b_jetsLVec;   //!
+   TBranch        *b_jetsLVec_slimmed;   //!
    TBranch        *b_met;   //!
    TBranch        *b_metphi;   //!
    TBranch        *b_passBJets;   //!
@@ -72,20 +71,20 @@ public :
    TBranch        *b_passSearchTrigger;   //!
    TBranch        *b_passdPhis;   //!
    TBranch        *b_passnJets;   //!
-   TBranch        *b_puppiJetsLVec;   //!
-   TBranch        *b_puppiSubJetsLVec;   //!
-   TBranch        *b_puppisoftDropMass;   //!
-   TBranch        *b_puppitau1;   //!
-   TBranch        *b_puppitau2;   //!
-   TBranch        *b_puppitau3;   //!
-   TBranch        *b_qgAxis2;   //!
-   TBranch        *b_qgLikelihood;   //!
-   TBranch        *b_qgMult;   //!
-   TBranch        *b_qgPtD;   //!
-   TBranch        *b_recoJetsBtag_0;   //!
-   TBranch        *b_recoJetschargedEmEnergyFraction;   //!
-   TBranch        *b_recoJetschargedHadronEnergyFraction;   //!
-   TBranch        *b_recoJetsneutralEmEnergyFraction;   //!
+   TBranch        *b_puppiJetsLVec_slimmed;   //!
+   TBranch        *b_puppiSubJetsLVec_slimmed;   //!
+   TBranch        *b_puppisoftDropMass_slimmed;   //!
+   TBranch        *b_puppitau1_slimmed;   //!
+   TBranch        *b_puppitau2_slimmed;   //!
+   TBranch        *b_puppitau3_slimmed;   //!
+   TBranch        *b_qgAxis2_slimmed;   //!
+   TBranch        *b_qgLikelihood_slimmed;   //!
+   TBranch        *b_qgMult_slimmed;   //!
+   TBranch        *b_qgPtD_slimmed;   //!
+   TBranch        *b_recoJetsBtag_slimmed;   //!
+   TBranch        *b_recoJetschargedEmEnergyFraction_slimmed;   //!
+   TBranch        *b_recoJetschargedHadronEnergyFraction_slimmed;   //!
+   TBranch        *b_recoJetsneutralEmEnergyFraction_slimmed;   //!
 
    SimpleAnalyzer(TTree *tree=0);
    virtual ~SimpleAnalyzer();
@@ -106,11 +105,24 @@ SimpleAnalyzer::SimpleAnalyzer(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/uscms_data/d3/pastika/DAS2018/CMSSW_9_3_3/src/TopTagger/Tools/susyTopTagging0_TTbarSingleLepT.root");
+
+#ifdef SINGLE_TREE
+      // The following code should be used if you want this class to access
+      // a single tree instead of a chain
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("Memory Directory");
       if (!f || !f->IsOpen()) {
-         f = new TFile("/uscms_data/d3/pastika/DAS2018/CMSSW_9_3_3/src/TopTagger/Tools/susyTopTagging0_TTbarSingleLepT.root");
+         f = new TFile("Memory Directory");
       }
       f->GetObject("slimmedTuple",tree);
+
+#else // SINGLE_TREE
+
+      // The following code should be used if you want this class to access a chain
+      // of trees.
+      TChain * chain = new TChain("slimmedTuple","");
+      chain->Add("/uscms_data/d3/pastika/DAS2018/CMSSW_9_3_3/src/TopTagger/Tools/susyTopTagging0_TTbarSingleLepT.root/slimmedTuple");
+      tree = chain;
+#endif // SINGLE_TREE
 
    }
    Init(tree);
@@ -154,21 +166,21 @@ void SimpleAnalyzer::Init(TTree *tree)
    // Set object pointer
    cutElecVec = 0;
    cutMuVec = 0;
-   jetsLVec = 0;
-   puppiJetsLVec = 0;
-   puppiSubJetsLVec = 0;
-   puppisoftDropMass = 0;
-   puppitau1 = 0;
-   puppitau2 = 0;
-   puppitau3 = 0;
-   qgAxis2 = 0;
-   qgLikelihood = 0;
-   qgMult = 0;
-   qgPtD = 0;
-   recoJetsBtag_0 = 0;
-   recoJetschargedEmEnergyFraction = 0;
-   recoJetschargedHadronEnergyFraction = 0;
-   recoJetsneutralEmEnergyFraction = 0;
+   jetsLVec_slimmed = 0;
+   puppiJetsLVec_slimmed = 0;
+   puppiSubJetsLVec_slimmed = 0;
+   puppisoftDropMass_slimmed = 0;
+   puppitau1_slimmed = 0;
+   puppitau2_slimmed = 0;
+   puppitau3_slimmed = 0;
+   qgAxis2_slimmed = 0;
+   qgLikelihood_slimmed = 0;
+   qgMult_slimmed = 0;
+   qgPtD_slimmed = 0;
+   recoJetsBtag_slimmed = 0;
+   recoJetschargedEmEnergyFraction_slimmed = 0;
+   recoJetschargedHadronEnergyFraction_slimmed = 0;
+   recoJetsneutralEmEnergyFraction_slimmed = 0;
    // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
@@ -179,7 +191,7 @@ void SimpleAnalyzer::Init(TTree *tree)
    fChain->SetBranchAddress("TriggerEffMC", &TriggerEffMC, &b_TriggerEffMC);
    fChain->SetBranchAddress("cutElecVec", &cutElecVec, &b_cutElecVec);
    fChain->SetBranchAddress("cutMuVec", &cutMuVec, &b_cutMuVec);
-   fChain->SetBranchAddress("jetsLVec", &jetsLVec, &b_jetsLVec);
+   fChain->SetBranchAddress("jetsLVec_slimmed", &jetsLVec_slimmed, &b_jetsLVec_slimmed);
    fChain->SetBranchAddress("met", &met, &b_met);
    fChain->SetBranchAddress("metphi", &metphi, &b_metphi);
    fChain->SetBranchAddress("passBJets", &passBJets, &b_passBJets);
@@ -190,20 +202,20 @@ void SimpleAnalyzer::Init(TTree *tree)
    fChain->SetBranchAddress("passSearchTrigger", &passSearchTrigger, &b_passSearchTrigger);
    fChain->SetBranchAddress("passdPhis", &passdPhis, &b_passdPhis);
    fChain->SetBranchAddress("passnJets", &passnJets, &b_passnJets);
-   fChain->SetBranchAddress("puppiJetsLVec", &puppiJetsLVec, &b_puppiJetsLVec);
-   fChain->SetBranchAddress("puppiSubJetsLVec", &puppiSubJetsLVec, &b_puppiSubJetsLVec);
-   fChain->SetBranchAddress("puppisoftDropMass", &puppisoftDropMass, &b_puppisoftDropMass);
-   fChain->SetBranchAddress("puppitau1", &puppitau1, &b_puppitau1);
-   fChain->SetBranchAddress("puppitau2", &puppitau2, &b_puppitau2);
-   fChain->SetBranchAddress("puppitau3", &puppitau3, &b_puppitau3);
-   fChain->SetBranchAddress("qgAxis2", &qgAxis2, &b_qgAxis2);
-   fChain->SetBranchAddress("qgLikelihood", &qgLikelihood, &b_qgLikelihood);
-   fChain->SetBranchAddress("qgMult", &qgMult, &b_qgMult);
-   fChain->SetBranchAddress("qgPtD", &qgPtD, &b_qgPtD);
-   fChain->SetBranchAddress("recoJetsBtag_0", &recoJetsBtag_0, &b_recoJetsBtag_0);
-   fChain->SetBranchAddress("recoJetschargedEmEnergyFraction", &recoJetschargedEmEnergyFraction, &b_recoJetschargedEmEnergyFraction);
-   fChain->SetBranchAddress("recoJetschargedHadronEnergyFraction", &recoJetschargedHadronEnergyFraction, &b_recoJetschargedHadronEnergyFraction);
-   fChain->SetBranchAddress("recoJetsneutralEmEnergyFraction", &recoJetsneutralEmEnergyFraction, &b_recoJetsneutralEmEnergyFraction);
+   fChain->SetBranchAddress("puppiJetsLVec_slimmed", &puppiJetsLVec_slimmed, &b_puppiJetsLVec_slimmed);
+   fChain->SetBranchAddress("puppiSubJetsLVec_slimmed", &puppiSubJetsLVec_slimmed, &b_puppiSubJetsLVec_slimmed);
+   fChain->SetBranchAddress("puppisoftDropMass_slimmed", &puppisoftDropMass_slimmed, &b_puppisoftDropMass_slimmed);
+   fChain->SetBranchAddress("puppitau1_slimmed", &puppitau1_slimmed, &b_puppitau1_slimmed);
+   fChain->SetBranchAddress("puppitau2_slimmed", &puppitau2_slimmed, &b_puppitau2_slimmed);
+   fChain->SetBranchAddress("puppitau3_slimmed", &puppitau3_slimmed, &b_puppitau3_slimmed);
+   fChain->SetBranchAddress("qgAxis2_slimmed", &qgAxis2_slimmed, &b_qgAxis2_slimmed);
+   fChain->SetBranchAddress("qgLikelihood_slimmed", &qgLikelihood_slimmed, &b_qgLikelihood_slimmed);
+   fChain->SetBranchAddress("qgMult_slimmed", &qgMult_slimmed, &b_qgMult_slimmed);
+   fChain->SetBranchAddress("qgPtD_slimmed", &qgPtD_slimmed, &b_qgPtD_slimmed);
+   fChain->SetBranchAddress("recoJetsBtag_slimmed", &recoJetsBtag_slimmed, &b_recoJetsBtag_slimmed);
+   fChain->SetBranchAddress("recoJetschargedEmEnergyFraction_slimmed", &recoJetschargedEmEnergyFraction_slimmed, &b_recoJetschargedEmEnergyFraction_slimmed);
+   fChain->SetBranchAddress("recoJetschargedHadronEnergyFraction_slimmed", &recoJetschargedHadronEnergyFraction_slimmed, &b_recoJetschargedHadronEnergyFraction_slimmed);
+   fChain->SetBranchAddress("recoJetsneutralEmEnergyFraction_slimmed", &recoJetsneutralEmEnergyFraction_slimmed, &b_recoJetsneutralEmEnergyFraction_slimmed);
    Notify();
 }
 

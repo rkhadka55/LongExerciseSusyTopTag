@@ -3,6 +3,7 @@
 
 #include<map>
 #include<string>
+#include<iostream>
 
 #include <TH2.h>
 #include <TH1D.h>
@@ -64,6 +65,8 @@ void SimpleAnalyzer::Loop()
       nb = fChain->GetEntry(jentry);   
       nbytes += nb;
       // if (Cut(ientry) < 0) continue;
+      if(ientry%100 == 0)
+          std::cout << "At event " << ientry << std::endl;
 
       // ------------------
       // --- TOP TAGGER ---
@@ -72,19 +75,19 @@ void SimpleAnalyzer::Loop()
       // Use helper function to create input list 
       // Create AK4 inputs object
       ttUtility::ConstAK4Inputs AK4Inputs = ttUtility::ConstAK4Inputs(
-          *jetsLVec, 
-          *recoJetsBtag_0,
-          *qgLikelihood
+          *jetsLVec_slimmed, 
+          *recoJetsBtag_slimmed,
+          *qgLikelihood_slimmed
           );
     
       // Create AK8 inputs object
       ttUtility::ConstAK8Inputs AK8Inputs = ttUtility::ConstAK8Inputs(
-          *puppiJetsLVec,
-          *puppitau1,
-          *puppitau2,
-          *puppitau3,
-          *puppisoftDropMass,
-          *puppiSubJetsLVec    // These should be the subjets!
+          *puppiJetsLVec_slimmed,
+          *puppitau1_slimmed,
+          *puppitau2_slimmed,
+          *puppitau3_slimmed,
+          *puppisoftDropMass_slimmed,
+          *puppiSubJetsLVec_slimmed    // These should be the subjets!
           );
       
       // Create jets constituents list combining AK4 and AK8 jets, these are used to construct top candiates

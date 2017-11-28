@@ -16,57 +16,41 @@
 #include "TopTagger/TopTagger/include/TopTaggerUtilities.h"
 #include "TopTagger/CfgParser/include/TTException.h"
 
-void SimpleAnalyzer::Loop()
+void SimpleAnalyzer::InitHistos()
 {
-//   In a ROOT session, you can do:
-//      root> .L SimpleAnalyzer.C
-//      root> SimpleAnalyzer t
-//      root> t.GetEntry(12); // Fill t data members with entry number 12
-//      root> t.Show();       // Show values of entry 12
-//      root> t.Show(16);     // Read and show values of entry 16
-//      root> t.Loop();       // Loop on all entries
-//
+    // Declare all your histograms here, that way we can fill them for multiple chains
+    my_histos.emplace("HT",new TH1D("HT","HT",100,0,2000));
+    my_histos.emplace("Nt",new TH1D("Nt","Nt",5,0,5));
+    
+}
 
-//     This is the loop skeleton where:
+void SimpleAnalyzer::Loop(double weight)
+{
+//    This is the loop skeleton where:
 //    jentry is the global entry number in the chain
 //    ientry is the entry number in the current Tree
-//  Note that the argument to GetEntry must be:
+//    Note that the argument to GetEntry must be:
 //    jentry for TChain::GetEntry
 //    ientry for TTree::GetEntry and TBranch::GetEntry
-//
-//       To read only selected branches, Insert statements like:
-// METHOD1:
-//    fChain->SetBranchStatus("*",0);  // disable all branches
-//    fChain->SetBranchStatus("branchname",1);  // activate branchname
-// METHOD2: replace line
-//    fChain->GetEntry(jentry);       //read all branches
-//by  b_branchname->GetEntry(ientry); //read only this branch
+
    if (fChain == 0) return;
 
    Long64_t nentries = fChain->GetEntriesFast();
-
    Long64_t nbytes = 0, nb = 0;
-
-   // Define list of histograms you want to make
-   std::map<std::string, TH1D*>  my_histos;
-   my_histos.emplace("HT",new TH1D("HT","HT",100,0,2000));
-   my_histos.emplace("Nt",new TH1D("Nt","Nt",5,0,5));
-
-
 
    // Create top tagger object
    TopTagger tt;
    tt.setCfgFile("TopTagger.cfg");
 
+   // event loop
    for (Long64_t jentry=0; jentry<nentries; jentry++) 
    {
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   
       nbytes += nb;
-      // if (Cut(ientry) < 0) continue;
-      if(ientry%100 == 0)
-          std::cout << "At event " << ientry << std::endl;
+      if(jentry%5000 == 0)
+          std::cout << "At event " << jentry << std::endl;
 
       // ------------------
       // --- TOP TAGGER ---
@@ -87,7 +71,7 @@ void SimpleAnalyzer::Loop()
           *puppitau2_slimmed,
           *puppitau3_slimmed,
           *puppisoftDropMass_slimmed,
-          *puppiSubJetsLVec_slimmed    // These should be the subjets!
+          *puppiSubJetsLVec_slimmed 
           );
       
       // Create jets constituents list combining AK4 and AK8 jets, these are used to construct top candiates
@@ -103,16 +87,30 @@ void SimpleAnalyzer::Loop()
       //get reconstructed tops
       const std::vector<TopObject*>& tops = ttr.getTops();
       
+      // ----------------------------
+      // --- Apply some selection ---
+      // ----------------------------
+
+      if(!(passNoiseEventFilter && passSearchTrigger && passnJets && passdPhis 
+           && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets))
+          continue;
+
       // -----------------------
       // --- FILL HISTOGRAMS ---
       // -----------------------
-
-      my_histos["HT"]->Fill(HT);
-      my_histos["Nt"]->Fill(tops.size());
+      // weight is the sample weight, corresponding to xsec*lumi/nevents_total
+      // eventWeight is the per-event weight, including genlevel weights, btagging weights etc
+      my_histos["HT"]->Fill(HT, weight*eventWeight);
+      my_histos["Nt"]->Fill(tops.size(), weight*eventWeight);
    }
 
+
+}
+
+void SimpleAnalyzer::WriteHistos()
+{
    for (const auto &p : my_histos) {
        p.second->Write();
    }
-
+    
 }

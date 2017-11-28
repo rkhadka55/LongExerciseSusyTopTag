@@ -11,9 +11,12 @@
 #include <TChain.h>
 #include <TFile.h>
 #include <TLorentzVector.h>
+#include <TH1D.h>
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
+#include <map>
+#include <string>
 
 using namespace std;
 
@@ -29,6 +32,7 @@ public :
    Double_t        TriggerEffMC;
    vector<TLorentzVector> *cutElecVec;
    vector<TLorentzVector> *cutMuVec;
+   Double_t        eventWeight;
    vector<TLorentzVector> *jetsLVec_slimmed;
    Double_t        met;
    Double_t        metphi;
@@ -60,6 +64,7 @@ public :
    TBranch        *b_TriggerEffMC;   //!
    TBranch        *b_cutElecVec;   //!
    TBranch        *b_cutMuVec;   //!
+   TBranch        *b_eventWeight;   //!
    TBranch        *b_jetsLVec_slimmed;   //!
    TBranch        *b_met;   //!
    TBranch        *b_metphi;   //!
@@ -86,15 +91,22 @@ public :
    TBranch        *b_recoJetschargedHadronEnergyFraction_slimmed;   //!
    TBranch        *b_recoJetsneutralEmEnergyFraction_slimmed;   //!
 
+   // Added variables
+   std::map<std::string, TH1D*>  my_histos;
+
    SimpleAnalyzer(TTree *tree=0);
    virtual ~SimpleAnalyzer();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop();
+   virtual void     Loop(double weight);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
+   virtual void     InitHistos();
+   virtual void     WriteHistos();
+
+
 };
 
 #endif
@@ -135,6 +147,7 @@ SimpleAnalyzer::~SimpleAnalyzer()
 }
 
 Int_t SimpleAnalyzer::GetEntry(Long64_t entry)
+
 {
 // Read contents of entry.
    if (!fChain) return 0;
@@ -191,6 +204,7 @@ void SimpleAnalyzer::Init(TTree *tree)
    fChain->SetBranchAddress("TriggerEffMC", &TriggerEffMC, &b_TriggerEffMC);
    fChain->SetBranchAddress("cutElecVec", &cutElecVec, &b_cutElecVec);
    fChain->SetBranchAddress("cutMuVec", &cutMuVec, &b_cutMuVec);
+   fChain->SetBranchAddress("eventWeight", &eventWeight, &b_eventWeight);
    fChain->SetBranchAddress("jetsLVec_slimmed", &jetsLVec_slimmed, &b_jetsLVec_slimmed);
    fChain->SetBranchAddress("met", &met, &b_met);
    fChain->SetBranchAddress("metphi", &metphi, &b_metphi);

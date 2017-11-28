@@ -55,7 +55,7 @@ $(ODIR)/%.o : $(SDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS)  -fPIC -o $@ -c $<
 
 
-RunSimpleAnalyzer: $(ODIR)/RunSimpleAnalyzer.o $(ODIR)/SimpleAnalyzer.o
+RunSimpleAnalyzer: $(ODIR)/RunSimpleAnalyzer.o $(ODIR)/SimpleAnalyzer.o $(ODIR)/samples.o
 	$(LD) $^ $(LIBS) $(LIBSTOPTAGGER) -fPIC -o $@
 
 clean:

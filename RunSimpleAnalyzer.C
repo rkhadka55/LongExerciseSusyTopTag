@@ -7,6 +7,7 @@
 
 #include<iostream>
 #include<fstream>
+#include<getopt.h>
 
 bool endsWith (std::string const &fullString, std::string const &extension) {
     if (fullString.size() >= extension.size()) {
@@ -18,44 +19,75 @@ bool endsWith (std::string const &fullString, std::string const &extension) {
 
 int main(int argc, char *argv[])
 {
+    // Parse command line arguments
+    int opt;
+    int option_index = 0;
+    static struct option long_options[] = {
+        {"input",       required_argument, 0, 'I'}, // sample name, filelist, or root file name
+        {"numEvts",     required_argument, 0, 'N'}, // run over fewer events, mainly for testing purposes
+        {"outputdir",   required_argument, 0, 'D'}, // where to put the output files
+        {"outputfile",  required_argument, 0, 'F'}, // automatically formed from input if you provide a sample name instead of a filename or filelist
+        {"weight",      required_argument, 0, 'W'}, // not needed when input is a sample name
+    };
+
+    std::string infile = "";
+    int maxevents = -1;
+    std::string outfile = "mytest.root";
+    std::string outdir = ".";
+    double weight = 1.;
+
+    while((opt = getopt_long(argc, argv, "D:N:I:F:", long_options, &option_index)) != -1)
+    {
+        switch(opt)
+        {
+        case 'I':
+            infile = optarg;
+            break;
+
+        case 'N':
+            maxevents = int(atoi(optarg));
+            break;
+
+        case 'D':
+            outdir = optarg;
+            break;
+
+        case 'F':
+            outfile = optarg;
+            break;
+
+        case 'W':
+            weight = atof(optarg);
+            break;
+        }
+    }
+
+
     // Get information about samples
     AnaSamples::SampleSet        ss(AnaSamples::fileDir);
     AnaSamples::SampleCollection sc(ss);
 
-    double weight = 1;
     TChain* ch = new TChain( "slimmedTuple" ) ;
 
+    // Figure out what the input type is
     bool isROOT = false;
     bool isTXT = false;
-    if (argc == 1)
+    if (infile=="")
     {
-        std::cout << "Please provide a sample name, filename (ending with .root), or filelist (ending with .txt) to run over" << std::endl;
+        std::cout << "Please provide a sample name, filename (ending with .root), or filelist (ending with .txt) to run over. (Use option -I)" << std::endl;
         return 0;
     }
-    std::string infile = argv[1];
     if(endsWith(infile, ".root"))
         isROOT = true;
     else if(endsWith(infile, ".txt"))
         isTXT = true;
     std::string dataset = infile;
 
-    std::string outfile = "mytest.root";
-    std::string outdir = ".";
     if(!(isTXT || isROOT))
         outfile = dataset+".root";
-    if (argc > 2)
-    {
-        outdir = argv[2];
-    } 
-    if (argc > 3)
-    {
-        outfile = argv[3];
-    } 
     std::string fullpath = outdir + "/" + outfile;
     TFile* myfile = TFile::Open(fullpath.c_str(), "RECREATE");
 
-
-    // check if sample name, filename, or filelist
     if(isROOT || isTXT)
     {
         if(isROOT)
@@ -84,7 +116,7 @@ int main(int argc, char *argv[])
         SimpleAnalyzer t = SimpleAnalyzer(ch);
         std::cout << "Starting loop" << std::endl;
         t.InitHistos();
-        t.Loop(weight);
+        t.Loop(weight, maxevents);
         t.WriteHistos();
     }
     else
@@ -102,7 +134,7 @@ int main(int argc, char *argv[])
             //std::cout << "Chain has " << new_ch->GetEntries() << " entries." << std::endl;
             weight = f.getWeight();
             std::cout << "Starting loop for " << f.tag << std::endl;
-            t.Loop(weight);
+            t.Loop(weight, maxevents);
         }
         t.WriteHistos();
     }

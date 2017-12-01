@@ -19,12 +19,16 @@
 void SimpleAnalyzer::InitHistos()
 {
     // Declare all your histograms here, that way we can fill them for multiple chains
-    my_histos.emplace("HT",new TH1D("HT","HT",100,0,2000));
+    my_histos.emplace("HT",new TH1D("HT","HT",60,0,3000));
     my_histos.emplace("Nt",new TH1D("Nt","Nt",5,0,5));
-    
+    my_histos.emplace("met_SB1", new TH1D("met_SB1", "met_SB1", 100, 0, 1000));
+    // histograms for the background estimation
+    my_histos.emplace("counts", new TH1D("counts", "counts", 5, 0, 5)); // 1 bin per search bin
+    my_histos.emplace("weight_sq", new TH1D("weight_sq", "weight_sq", 5, 0, 5)); // 1 bin per search bin
+
 }
 
-void SimpleAnalyzer::Loop(double weight)
+void SimpleAnalyzer::Loop(double weight, int maxevents=-1)
 {
 //    This is the loop skeleton where:
 //    jentry is the global entry number in the chain
@@ -47,9 +51,10 @@ void SimpleAnalyzer::Loop(double weight)
    {
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
+      if (maxevents!=-1 && jentry>=maxevents) break;
       nb = fChain->GetEntry(jentry);   
       nbytes += nb;
-      if(jentry%5000 == 0)
+      if (jentry%5000 == 0)
           std::cout << "At event " << jentry << std::endl;
 
       // ------------------
@@ -95,13 +100,57 @@ void SimpleAnalyzer::Loop(double weight)
            && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets))
           continue;
 
+      int ntop = tops.size();
+      double mt2 = ttUtility::calculateMT2(ttr);
+      int nb = 0;
+      for(int ijet=0; ijet<recoJetsBtag_slimmed->size(); ++ijet)
+      {
+          if(recoJetsBtag_slimmed->at(ijet) > 0.8484)
+              nb++;
+      }
+
+      // different search bins
+      bool SB1 = ntop>=2 && nb>=1 && mt2>=200 && met>=400;
+      bool SB2 = ntop>=1 && nb>=2 && mt2>=600 && met>=400;
+      bool SB3 = ntop>=2 && nb>=3 && HT>=600 && met>=350;
+      bool SB4 = ntop>=2 && nb>=3 && HT>=300 && met>=500;
+      bool SB5 = ntop>=2 && nb>=3 && HT>=1300 && met>=500;
+
       // -----------------------
       // --- FILL HISTOGRAMS ---
       // -----------------------
       // weight is the sample weight, corresponding to xsec*lumi/nevents_total
       // eventWeight is the per-event weight, including genlevel weights, btagging weights etc
-      my_histos["HT"]->Fill(HT, weight*eventWeight);
-      my_histos["Nt"]->Fill(tops.size(), weight*eventWeight);
+      double total_weight = weight*eventWeight;
+      my_histos["HT"]->Fill(HT, total_weight);
+      my_histos["Nt"]->Fill(tops.size(), total_weight);
+
+      if(SB1)
+      {
+          my_histos["counts"]->Fill(1, total_weight);
+          my_histos["weight_sq"]->Fill(1, total_weight*total_weight);
+          my_histos["met_SB1"]->Fill(met, total_weight);
+      } 
+      else if(SB2)
+      {
+          my_histos["counts"]->Fill(2, total_weight);
+          my_histos["weight_sq"]->Fill(2, total_weight*total_weight);
+      }
+      else if(SB3)
+      {
+          my_histos["counts"]->Fill(3, total_weight);
+          my_histos["weight_sq"]->Fill(3, total_weight*total_weight);
+      }
+      else if(SB4)
+      {
+          my_histos["counts"]->Fill(4, total_weight);
+          my_histos["weight_sq"]->Fill(4, total_weight*total_weight);
+      }
+      else if(SB5)
+      {
+          my_histos["counts"]->Fill(5, total_weight);
+          my_histos["weight_sq"]->Fill(5, total_weight*total_weight);
+      }
    }
 
 

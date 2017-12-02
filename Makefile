@@ -2,7 +2,6 @@ IDIR       = .
 ODIR       = obj
 SDIR       = .
 
-XGBOOST_DIRECTORY = /cvmfs/sft.cern.ch/lcg/releases/xgboost/0.60-04a4f/x86_64-slc6-gcc62-opt
 TTDIR  = $(CMSSW_BASE)/src/TopTagger/
 TTTDIR     = $(TTDIR)/TopTagger/test
 
@@ -20,7 +19,7 @@ CXXFLAGS  += $(shell root-config --cflags)
 CXXDEPFLAGS = -MMD -MP
 
 LD         = g++
-LDFLAGS    =
+#LDFLAGS    =
 
 LIBS       = $(shell root-config --glibs)
 LIBSTOPTAGGER = -L$(TTTDIR) -lTopTagger
@@ -33,8 +32,8 @@ all: mkobj $(PROGRAMS)
 mkobj:
 	@mkdir -p obj
 
-$(ODIR)/%.o : $(SDIR)/%.C
-	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS)  -fPIC -o $@ -c $<
+$(ODIR)/%.o : $(SDIR)/%.C 
+	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS) -fPIC -o $@ -c $<
 
 $(ODIR)/%.o : $(SDIR)/%.c
 	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS)  -fPIC -o $@ -c $<
@@ -46,7 +45,7 @@ $(ODIR)/%.o : $(SDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS)  -fPIC -o $@ -c $<
 
 
-RunSimpleAnalyzer: $(ODIR)/RunSimpleAnalyzer.o $(ODIR)/SimpleAnalyzer.o $(ODIR)/samples.o
+RunSimpleAnalyzer: $(ODIR)/RunSimpleAnalyzer.o $(ODIR)/SimpleAnalyzer.o $(ODIR)/samples.o $(ODIR)/BaseTuple.o
 	$(LD) $^ $(LIBS) $(LIBSTOPTAGGER) -fPIC -o $@
 
 clean:

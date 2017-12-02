@@ -2,6 +2,7 @@ import argparse
 import os
 import subprocess
 from multiprocessing import Pool
+from datetime import datetime
 
 def runSimpleAnalyzer(optlist):
     command = ["./RunSimpleAnalyzer"]
@@ -30,7 +31,13 @@ if __name__ == "__main__":
     
     my_list = []
     for sample in samplelist:
-        my_list.append([sample, args.outdir])
+        my_list.append(["-I",sample, "-D", args.outdir])
+
+    start_time = datetime.now()
+    print "Current time: " , str(start_time)
     
     p = Pool(args.npool)
     p.map(runSimpleAnalyzer,my_list)
+
+    print "Started on ", str(start_time)
+    print "Ended on " , str(datetime.now())

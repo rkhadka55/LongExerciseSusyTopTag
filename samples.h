@@ -63,7 +63,7 @@ namespace AnaSamples
   bool operator!= (const FileSummary& lhs, const FileSummary& rhs);
 
   static const double luminosity = 35866.210733056; // in pb-1
-  static const std::string fileDir = "/store/user/pastika/DAS2018Tuples/DAS2018NTuples_V2/";
+  static const std::string fileDir = "/store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/";
 
   template<class T>
   class SampleBase

@@ -60,36 +60,25 @@ namespace AnaSamples
 
 
         // From https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#W_jets, kw = 1.21
-        addSample("WJetsToLNu_HT_70to100",    "filelists/WJetsToLNu_HT-70To100.txt",    "slimmedTuple", 1319,    lumi, 10034066,  1.21, kMagenta+1);
-        addSample("WJetsToLNu_HT_100to200",   "filelists/WJetsToLNu_HT-100To200.txt",   "slimmedTuple", 1345,    lumi, 79065975,  1.21, kMagenta+1);
-        addSample("WJetsToLNu_HT_200to400",   "filelists/WJetsToLNu_HT-200To400.txt",   "slimmedTuple", 359.7,   lumi, 38867206,  1.21, kMagenta+1);
-        addSample("WJetsToLNu_HT_400to600",   "filelists/WJetsToLNu_HT-400To600.txt",   "slimmedTuple", 48.91,   lumi, 7759701,   1.21, kMagenta+1);
-        addSample("WJetsToLNu_HT_600to800",   "filelists/WJetsToLNu_HT-600To800.txt",   "slimmedTuple", 12.05,   lumi, 17494743,  1.21, kMagenta+1);
-        addSample("WJetsToLNu_HT_800to1200",  "filelists/WJetsToLNu_HT-800To1200.txt",  "slimmedTuple", 5.501,   lumi, 7745467,   1.21, kMagenta+1);
-        addSample("WJetsToLNu_HT_1200to2500", "filelists/WJetsToLNu_HT-1200To2500.txt", "slimmedTuple", 1.329,   lumi, 6801534,   1.21, kMagenta+1);
-        addSample("WJetsToLNu_HT_2500toInf",  "filelists/WJetsToLNu_HT-2500ToInf.txt",  "slimmedTuple", 0.03216, lumi, 2637821,   1.21, kMagenta+1);
+        addSample("WJetsToLNu_HT_70to100",    "filelists/WJetsToLNu_HT_70to100.txt",    "slimmedTuple", 1319,    lumi, 10034066,  1.21, kMagenta+1);
+        addSample("WJetsToLNu_HT_100to200",   "filelists/WJetsToLNu_HT_100to200.txt",   "slimmedTuple", 1345,    lumi, 79065975,  1.21, kMagenta+1);
+        addSample("WJetsToLNu_HT_200to400",   "filelists/WJetsToLNu_HT_200to400.txt",   "slimmedTuple", 359.7,   lumi, 38867206,  1.21, kMagenta+1);
+        addSample("WJetsToLNu_HT_400to600",   "filelists/WJetsToLNu_HT_400to600.txt",   "slimmedTuple", 48.91,   lumi, 7759701,   1.21, kMagenta+1);
+        addSample("WJetsToLNu_HT_600to800",   "filelists/WJetsToLNu_HT_600to800.txt",   "slimmedTuple", 12.05,   lumi, 17494743,  1.21, kMagenta+1);
+        addSample("WJetsToLNu_HT_800to1200",  "filelists/WJetsToLNu_HT_800to1200.txt",  "slimmedTuple", 5.501,   lumi, 7745467,   1.21, kMagenta+1);
+        addSample("WJetsToLNu_HT_1200to2500", "filelists/WJetsToLNu_HT_1200to2500.txt", "slimmedTuple", 1.329,   lumi, 6801534,   1.21, kMagenta+1);
+        addSample("WJetsToLNu_HT_2500toInf",  "filelists/WJetsToLNu_HT_2500toInf.txt",  "slimmedTuple", 0.03216, lumi, 2637821,   1.21, kMagenta+1);
         
         //Z -> nunu
         // From https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#DY_Z, kz = 1.23
-        addSample("ZJetsToNuNu_HT_100to200",   "filelists/ZJetsToNuNu_HT-100To200.txt",   "slimmedTuple", 280.35,    lumi, 24121326, 1.23,  kTeal+4);
-        addSample("ZJetsToNuNu_HT_200to400",   "filelists/ZJetsToNuNu_HT-200To400.txt",   "slimmedTuple", 77.67,     lumi, 24663714, 1.23,  kTeal+4);
-        addSample("ZJetsToNuNu_HT_400to600",   "filelists/ZJetsToNuNu_HT-400To600.txt",   "slimmedTuple", 10.73,     lumi, 9862869,  1.23,  kTeal+4);
-        addSample("ZJetsToNuNu_HT_600to800",   "filelists/ZJetsToNuNu_HT-600To800.txt",   "slimmedTuple", 0.853*3,   lumi, 5611895,  1.23,  kTeal+4);
-        addSample("ZJetsToNuNu_HT_800to1200",  "filelists/ZJetsToNuNu_HT-800To1200.txt",  "slimmedTuple", 0.394*3,   lumi, 2100324,  1.23,  kTeal+4);
-        addSample("ZJetsToNuNu_HT_1200to2500", "filelists/ZJetsToNuNu_HT-1200To2500.txt", "slimmedTuple", 0.0974*3,  lumi, 513471,   1.23,  kTeal+4);
-        addSample("ZJetsToNuNu_HT_2500toInf",  "filelists/ZJetsToNuNu_HT-2500ToInf.txt",  "slimmedTuple", 0.00230*3, lumi, 405030,   1.23,  kTeal+4);
+        addSample("ZJetsToNuNu_HT_100to200",   "filelists/ZJetsToNuNu_HT_100to200.txt",   "slimmedTuple", 280.35,    lumi, 24121326, 1.23,  kTeal+4);
+        addSample("ZJetsToNuNu_HT_200to400",   "filelists/ZJetsToNuNu_HT_200to400.txt",   "slimmedTuple", 77.67,     lumi, 24663714, 1.23,  kTeal+4);
+        addSample("ZJetsToNuNu_HT_400to600",   "filelists/ZJetsToNuNu_HT_400to600.txt",   "slimmedTuple", 10.73,     lumi, 9862869,  1.23,  kTeal+4);
+        addSample("ZJetsToNuNu_HT_600to800",   "filelists/ZJetsToNuNu_HT_600to800.txt",   "slimmedTuple", 0.853*3,   lumi, 5611895,  1.23,  kTeal+4);
+        addSample("ZJetsToNuNu_HT_800to1200",  "filelists/ZJetsToNuNu_HT_800to1200.txt",  "slimmedTuple", 0.394*3,   lumi, 2100324,  1.23,  kTeal+4);
+        addSample("ZJetsToNuNu_HT_1200to2500", "filelists/ZJetsToNuNu_HT_1200to2500.txt", "slimmedTuple", 0.0974*3,  lumi, 513471,   1.23,  kTeal+4);
+        addSample("ZJetsToNuNu_HT_2500toInf",  "filelists/ZJetsToNuNu_HT_2500toInf.txt",  "slimmedTuple", 0.00230*3, lumi, 405030,   1.23,  kTeal+4);
        
-        //DY->ll
-        // kz = 1.23
-        addSample("DYJetsToLL_HT_70to100", "filelists/DYJetsToLL_M-50_HT-70to100.txt", "slimmedTuple", 175.3, lumi, 9427818, 1.23,  kYellow-7);
-        addSample("DYJetsToLL_HT_100to200", "filelists/DYJetsToLL_M-50_HT-100to200.txt", "slimmedTuple", 147.4, lumi, 10508241, 1.23,  kYellow-7);
-        addSample("DYJetsToLL_HT_200to400", "filelists/DYJetsToLL_M-50_HT-200to400.txt", "slimmedTuple", 40.99, lumi, 9432957,  1.23,  kYellow-7);
-        addSample("DYJetsToLL_HT_400to600", "filelists/DYJetsToLL_M-50_HT-400to600.txt", "slimmedTuple", 5.678, lumi, 10008776, 1.23,  kYellow-7);
-        addSample("DYJetsToLL_HT_600to800", "filelists/DYJetsToLL_M-50_HT-600to800.txt", "slimmedTuple", 1.367, lumi, 8292957,  1.23,  kYellow-7);
-        addSample("DYJetsToLL_HT_800to1200", "filelists/DYJetsToLL_M-50_HT-800to1200.txt", "slimmedTuple", 0.6304, lumi, 2668730,  1.23,  kYellow-7);
-        addSample("DYJetsToLL_HT_1200to2500", "filelists/DYJetsToLL_M-50_HT-1200to2500.txt", "slimmedTuple", 0.1514, lumi, 596079,  1.23,  kYellow-7);
-        addSample("DYJetsToLL_HT_2500toInf", "filelists/DYJetsToLL_M-50_HT-2500toInf.txt", "slimmedTuple", 0.003565, lumi, 399492,  1.23,  kYellow-7);
-
         //QCD
         // Ref. https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#QCD. But numbers are from McM.
         addSample("QCD_HT100to200"  , "filelists/QCD_HT100to200.txt"  ,"slimmedTuple", 27540000, lumi, 80547699, 1.0,  kBlue);

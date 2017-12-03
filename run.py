@@ -20,12 +20,12 @@ if __name__ == "__main__":
         os.mkdir(args.outdir)
 
     samplelist = ["TTbarNoHad",
+                  "Rare",
                   "WJetsToLNu",
                   "ZJetsToNuNu",
                   "QCD",
                   "ST",
                   "Diboson",
-                  "Rare",
                   "Data_MET"
                   ]
     

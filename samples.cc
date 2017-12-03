@@ -130,7 +130,7 @@ namespace AnaSamples
         addSample("WWToLNuQQ", "filelists/WWToLNuQQ.txt", "slimmedTuple", 49.997,  lumi, 8997800,  1.0,  kViolet+4); 
         
         // Ref. https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns (NLO from MCFM)
-        addSample("WZ", "filelists/WZ_TuneCUETP8M1_13TeV-pythia8.txt", "slimmedTuple", 47.13,  lumi, 3995828,  1.0,  kViolet+4);
+        addSample("WZ", "filelists/WZ.txt", "slimmedTuple", 47.13,  lumi, 3995828,  1.0,  kViolet+4);
 
         //addSample("ZZ", "filelists/ZZ_TuneCUETP8M1_13TeV-pythia8.txt", "slimmedTuple", 16.523, lumi, 989312,  1.0,  kViolet+4);
         addSample("ZZTo2Q2Nu", "filelists/ZZTo2Q2Nu.txt", "slimmedTuple", 4.04, lumi, 23902489 - 5716189,  1.0,  kViolet+4);
@@ -202,6 +202,8 @@ namespace AnaSamples
                     "TTGJets", "TTTT",
                     "WWW", "WWZ", "WZZ", "ZZZ", "WWG", "WZG", 
                     "ttHTobb", "ttHToNonbb"});
+
+        addSampleSet(samples, "TTZ", {"TTZToLLNuNu", "TTZToQQ"});
 
         addSampleSet(samples, "ALL_MC", {});
 

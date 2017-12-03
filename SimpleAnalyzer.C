@@ -22,9 +22,10 @@ void SimpleAnalyzer::InitHistos()
     my_histos.emplace("HT",new TH1D("HT","HT",60,0,3000));
     my_histos.emplace("Nt",new TH1D("Nt","Nt",5,0,5));
     my_histos.emplace("met_SB1", new TH1D("met_SB1", "met_SB1", 100, 0, 1000));
+
     // histograms for the background estimation
-    my_histos.emplace("counts", new TH1D("counts", "counts", 5, 0, 5)); // 1 bin per search bin
-    my_histos.emplace("weight_sq", new TH1D("weight_sq", "weight_sq", 5, 0, 5)); // 1 bin per search bin
+    my_histos.emplace("counts", new TH1D("counts", "counts", 6, 0, 6)); // 1 bin per search bin
+    my_histos.emplace("weight_sq", new TH1D("weight_sq", "weight_sq", 6, 0, 6)); // 1 bin per search bin
 
 }
 
@@ -101,7 +102,10 @@ void SimpleAnalyzer::Loop(double weight, int maxevents=-1)
           continue;
 
       int ntop = tops.size();
-      double mt2 = ttUtility::calculateMT2(ttr);
+      // Make MET into a TLorentzVector
+      TLorentzVector metLV;
+      metLV.SetPtEtaPhiM(met, 0, metphi, 0);
+      double mt2 = ttUtility::calculateMT2(ttr, metLV);
       int nb = 0;
       for(int ijet=0; ijet<recoJetsBtag_slimmed->size(); ++ijet)
       {
@@ -125,10 +129,12 @@ void SimpleAnalyzer::Loop(double weight, int maxevents=-1)
       my_histos["HT"]->Fill(HT, total_weight);
       my_histos["Nt"]->Fill(tops.size(), total_weight);
 
+      my_histos["counts"]->Fill(0., total_weight);
+      my_histos["weight_sq"]->Fill(0., total_weight*total_weight);
       if(SB1)
       {
-          my_histos["counts"]->Fill(1, total_weight);
-          my_histos["weight_sq"]->Fill(1, total_weight*total_weight);
+          my_histos["counts"]->Fill(1., total_weight);
+          my_histos["weight_sq"]->Fill(1., total_weight*total_weight);
           my_histos["met_SB1"]->Fill(met, total_weight);
       } 
       else if(SB2)

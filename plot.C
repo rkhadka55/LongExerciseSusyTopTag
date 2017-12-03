@@ -3,11 +3,36 @@
 #include "TFile.h"
 #include "TCanvas.h"
 #include "TLegend.h"
+#include "TLatex.h"
 
 #include <memory>
 #include <vector>
 #include <string>
 #include <cstdio>
+
+void smartMax(const TH1 * const h, const TLegend* const l, const TPad* const p, double& gmin, double& gmax, double& gpThreshMax, const bool error)
+{
+    const bool isLog = p->GetLogy();
+    double min = 9e99;
+    double max = -9e99;
+    double pThreshMax = -9e99;
+    int threshold = static_cast<int>(h->GetNbinsX()*(l->GetX1() - p->GetLeftMargin())/((1 - p->GetRightMargin()) - p->GetLeftMargin()));
+    printf("thresh %d\n", threshold);
+
+    for(int i = 1; i <= h->GetNbinsX(); ++i)
+    {
+        double bin = 0.0;
+        if(error) bin = h->GetBinContent(i) + h->GetBinError(i);
+        else      bin = h->GetBinContent(i);
+        if(bin > max) max = bin;
+        else if(bin > 1e-10 && bin < min) min = bin;
+        if(i >= threshold && bin > pThreshMax) pThreshMax = bin;
+    }
+
+    gpThreshMax = std::max(gpThreshMax, pThreshMax);
+    gmax = std::max(gmax, max);
+    gmin = std::min(gmin, min);
+}
 
 class histInfo
 {
@@ -95,24 +120,33 @@ public:
 };
 
 
-void plot(const std::string& histName, const std::string& xAxisLabel, const std::string& yAxisLabel = "Events", const bool isLogY = false, const double xmin = 999.9, const double xmax = -999.9, int rebin = -1)
+void plot(const std::string& histName, const std::string& xAxisLabel, const std::string& yAxisLabel = "Events", const bool isLogY = false, const double xmin = 999.9, const double xmax = -999.9, int rebin = -1, double lumi = 36100)
 {
     //This is a magic incantation to disassociate opened histograms from their files so the files can be closed
     TH1::AddDirectory(false);
 
     //entry for data
-    histInfo data = {"Data like QCD", "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/QCD.root", histName, "PEX0", kBlack, rebin};
+    histInfo data = {"Data", "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/Data_MET.root", histName, "PEX0", kBlack, rebin};
 
     //vector summarizing background histograms to include in the plot
     std::vector<histInfo> bgEntries = {
-        {"QCD",       "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/QCD.root", histName, "hist", kRed, rebin},
-        {"MORE QCD",  "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/QCD.root", histName, "hist", kBlue, rebin},
+        {"t#bar{t}",           "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/TTbarNoHad.root",  histName, "hist", kRed,        rebin},
+        {"W+Jets",             "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/WJetsToLNu.root",  histName, "hist", kBlue,       rebin},
+        {"Single top",         "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/ST.root",          histName, "hist", kOrange,     rebin},
+        {"Z#rightarrow#nu#nu", "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/ZJetsToNuNu.root", histName, "hist", kYellow + 2, rebin},
+        {"QCD",                "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/QCD.root",         histName, "hist", kMagenta,    rebin},
+        {"Rare",               "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/Rare.root",        histName, "hist", kGray,       rebin},
     };
 
     //vector summarizing signal histograms to include in the plot
     std::vector<histInfo> sigEntries = {
         {"Signal QCD", "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/QCD.root", histName, "hist", kGreen + 2, rebin},
     };
+
+    //create the canvas for the plot
+    TCanvas *c = new TCanvas("c1", "c1", 800, 800);
+    //switch to the canvas to ensure it is the active object
+    c->cd();
 
     //Create TLegend
     TLegend *leg = new TLegend(0.50, 0.56, 0.89, 0.88);
@@ -123,8 +157,24 @@ void plot(const std::string& histName, const std::string& xAxisLabel, const std:
     leg->SetTextFont(42);
 
     //get maximum from histos and fill TLegend
+    double min = 0.0;
+    double max = 0.0;
+    double lmax = 0.0;
+
+    //Create the THStack for the background ... warning, THStacks are terrible and must be filled "backwards"
+    THStack *bgStack = new THStack();
+    //Make seperate histogram from sum of BG histograms because I don't know how to make a THStack give me this 
+    TH1* hbgSum = nullptr;
+    for(int iBG = bgEntries.size() - 1; iBG >= 0; --iBG)
+    {
+        bgStack->Add(bgEntries[iBG].h.get(), bgEntries[iBG].drawOptions.c_str());
+        if(!hbgSum) hbgSum = static_cast<TH1*>(bgEntries[iBG].h->Clone());
+        else        hbgSum->Add(bgEntries[iBG].h.get());
+    }
+
+    //data
     leg->AddEntry(data.h.get(), data.legEntry.c_str(), data.drawOptions.c_str());
-    double histMax = std::max(histMax, data.h->GetMaximum());
+    smartMax(hbgSum, leg, static_cast<TPad*>(gPad), min, max, lmax, true);
 
     //background
     for(auto& entry : bgEntries)
@@ -141,25 +191,13 @@ void plot(const std::string& histName, const std::string& xAxisLabel, const std:
     {
         //add histograms to TLegend
         leg->AddEntry(entry.h.get(), entry.legEntry.c_str(), "L");
+        smartMax(entry.h.get(), leg, static_cast<TPad*>(gPad), min, max, lmax, false);
     }
-
-    //Create the THStack for the background ... warning, THStacks are terrible and must be filled "backwards"
-    THStack *bgStack = new THStack();
-    for(int iBG = bgEntries.size() - 1; iBG >= 0; --iBG)
-    {
-        bgStack->Add(bgEntries[iBG].h.get(), bgEntries[iBG].drawOptions.c_str());
-    }
-    histMax = std::max(histMax, bgStack->GetMaximum());
-
-    //create the canvas for the plot
-    TCanvas *c = new TCanvas("c1", "c1", 800, 800);
-    //switch to the canvas to ensure it is the active object
-    c->cd();
 
     //Set Canvas margin (gPad is root magic to access the current pad, in this case canvas "c")
     gPad->SetLeftMargin(0.12);
     gPad->SetRightMargin(0.06);
-    gPad->SetTopMargin(0.10);
+    gPad->SetTopMargin(0.08);
     gPad->SetBottomMargin(0.12);
 
     //create a dummy histogram to act as the axes
@@ -168,8 +206,25 @@ void plot(const std::string& histName, const std::string& xAxisLabel, const std:
     dummy.h->GetYaxis()->SetTitle(yAxisLabel.c_str());
     dummy.h->GetXaxis()->SetTitle(xAxisLabel.c_str());
     //Set the y-range of the histogram
-    if(isLogY) dummy.h->GetYaxis()->SetRangeUser(0, histMax*20);
-    else       dummy.h->GetYaxis()->SetRangeUser(0, histMax*1.3);
+    if(isLogY)
+    {
+        double locMin = std::min(0.2, std::max(0.2, 0.05 * min));
+        double legSpan = (log10(3*max) - log10(locMin)) * (leg->GetY1() - gPad->GetBottomMargin()) / ((1 - gPad->GetTopMargin()) - gPad->GetBottomMargin());
+        double legMin = legSpan + log10(locMin);
+        if(log10(lmax) > legMin)
+        {
+            double scale = (log10(lmax) - log10(locMin)) / (legMin - log10(locMin));
+            max = pow(max/locMin, scale)*locMin;
+        }
+        dummy.h->GetYaxis()->SetRangeUser(locMin, 10*max);
+    }
+    else
+    {
+        double locMin = 0.0;
+        double legMin = (1.2*max - locMin) * (leg->GetY1() - gPad->GetBottomMargin()) / ((1 - gPad->GetTopMargin()) - gPad->GetBottomMargin());
+        if(lmax > legMin) max *= (lmax - locMin)/(legMin - locMin);
+        dummy.h->GetYaxis()->SetRangeUser(0.0, max*1.2);
+    }
     //set x-axis range
     if(xmin < xmax) dummy.h->GetXaxis()->SetRangeUser(xmin, xmax);
 
@@ -197,6 +252,27 @@ void plot(const std::string& histName, const std::string& xAxisLabel, const std:
     //Draw dummy hist again to get axes on top of histograms
     dummy.draw("AXIS");
 
+    //Draw CMS and lumi lables
+    char lumistamp[128];
+    sprintf(lumistamp, "%.1f fb^{-1} (13 TeV)", lumi / 1000.0);
+
+    TLatex mark;
+    mark.SetNDC(true);
+
+    //Draw CMS mark
+    mark.SetTextAlign(11);
+    mark.SetTextSize(0.050);
+    mark.SetTextFont(61);
+    mark.DrawLatex(gPad->GetLeftMargin(), 1 - (gPad->GetTopMargin() - 0.017), "CMS"); // #scale[0.8]{#it{Preliminary}}");
+    mark.SetTextSize(0.040);
+    mark.SetTextFont(52);
+    mark.DrawLatex(gPad->GetLeftMargin() + 0.11, 1 - (gPad->GetTopMargin() - 0.017), "DAS 2018");
+
+    //Draw lumistamp
+    mark.SetTextFont(42);
+    mark.SetTextAlign(31);
+    mark.DrawLatex(1 - gPad->GetRightMargin(), 1 - (gPad->GetTopMargin() - 0.017), lumistamp);
+
     //save new plot to file
     c->Print((histName + ".png").c_str());
 
@@ -204,11 +280,11 @@ void plot(const std::string& histName, const std::string& xAxisLabel, const std:
     delete c;
     delete leg;
     delete bgStack;
-
+    delete hbgSum;
 }
 
 int main()
 {
-    plot("HT", "H_{T} [GeV]", "Events", false, 300, 2000, 5);
+    plot("HT", "H_{T} [GeV]", "Events", true, -1, -1, 5);
     plot("Nt", "N_{T}");
 }

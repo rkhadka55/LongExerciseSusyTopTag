@@ -206,8 +206,6 @@ void plot(const std::string& histName, const std::string& xAxisLabel, const std:
     dummy.h->GetYaxis()->SetTitle(yAxisLabel.c_str());
     dummy.h->GetXaxis()->SetTitle(xAxisLabel.c_str());
     //Set the y-range of the histogram
-
-    printf("%f %f %f\n", min, max, lmax);
     if(isLogY)
     {
         double locMin = std::min(0.2, std::max(0.2, 0.05 * min));

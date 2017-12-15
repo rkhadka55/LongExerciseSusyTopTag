@@ -10,6 +10,7 @@
 #include <string>
 #include <cstdio>
 
+//This is a helper function which will keep the plot from overlapping with the legend
 void smartMax(const TH1 * const h, const TLegend* const l, const TPad* const p, double& gmin, double& gmax, double& gpThreshMax, const bool error)
 {
     const bool isLog = p->GetLogy();
@@ -17,7 +18,6 @@ void smartMax(const TH1 * const h, const TLegend* const l, const TPad* const p, 
     double max = -9e99;
     double pThreshMax = -9e99;
     int threshold = static_cast<int>(h->GetNbinsX()*(l->GetX1() - p->GetLeftMargin())/((1 - p->GetRightMargin()) - p->GetLeftMargin()));
-    printf("thresh %d\n", threshold);
 
     for(int i = 1; i <= h->GetNbinsX(); ++i)
     {
@@ -34,6 +34,7 @@ void smartMax(const TH1 * const h, const TLegend* const l, const TPad* const p, 
     gmin = std::min(gmin, min);
 }
 
+//Class to hold TH1* with various helper functions 
 class histInfo
 {
 public:
@@ -105,9 +106,8 @@ public:
         else              h->SetFillColor(color);
     }
 
-    histInfo(const std::string& legEntry, const std::string& histFile, const std::string& histName, const std::string& drawOptions, const int color, const int rebin) : legEntry(legEntry), histFile(histFile), histName(histName), drawOptions(drawOptions), color(color), rebin(rebin), h(nullptr)
+    histInfo(const std::string& legEntry, const std::string& histFile, const std::string& drawOptions, const int color) : legEntry(legEntry), histFile(histFile), histName(""), drawOptions(drawOptions), color(color), rebin(-1), h(nullptr)
     {
-        retrieveHistogram();
     }
 
     histInfo(TH1* h) : legEntry(h->GetName()), histFile(""), histName(h->GetName()), drawOptions(""), color(0), rebin(0), h(h)
@@ -119,172 +119,206 @@ public:
     }
 };
 
-
-void plot(const std::string& histName, const std::string& xAxisLabel, const std::string& yAxisLabel = "Events", const bool isLogY = false, const double xmin = 999.9, const double xmax = -999.9, int rebin = -1, double lumi = 36100)
+class Plotter
 {
-    //This is a magic incantation to disassociate opened histograms from their files so the files can be closed
-    TH1::AddDirectory(false);
-
+private:
     //entry for data
-    histInfo data = {"Data", "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/Data_MET.root", histName, "PEX0", kBlack, rebin};
+    histInfo data_;
+    //vector summarizing background histograms to include in the plot
+    std::vector<histInfo> bgEntries_;
+    //vector summarizing signal histograms to include in the plot
+    std::vector<histInfo> sigEntries_;
+    
+public:
+    Plotter(histInfo&& data, std::vector<histInfo>&& bgEntries, std::vector<histInfo>&& sigEntries) : data_(data), bgEntries_(bgEntries), sigEntries_(sigEntries) {}
+
+    void plot(const std::string& histName, const std::string& xAxisLabel, const std::string& yAxisLabel = "Events", const bool isLogY = false, const double xmin = 999.9, const double xmax = -999.9, int rebin = -1, double lumi = 36100)
+    {
+        //This is a magic incantation to disassociate opened histograms from their files so the files can be closed
+        TH1::AddDirectory(false);
+
+        //create the canvas for the plot
+        TCanvas *c = new TCanvas("c1", "c1", 800, 800);
+        //switch to the canvas to ensure it is the active object
+        c->cd();
+
+        //Create TLegend
+        TLegend *leg = new TLegend(0.50, 0.56, 0.89, 0.88);
+        leg->SetFillStyle(0);
+        leg->SetBorderSize(0);
+        leg->SetLineWidth(1);
+        leg->SetNColumns(1);
+        leg->SetTextFont(42);
+
+        //get maximum from histos and fill TLegend
+        double min = 0.0;
+        double max = 0.0;
+        double lmax = 0.0;
+
+        //Create the THStack for the background ... warning, THStacks are terrible and must be filled "backwards"
+        THStack *bgStack = new THStack();
+        //Make seperate histogram from sum of BG histograms because I don't know how to make a THStack give me this 
+        TH1* hbgSum = nullptr;
+        for(int iBG = bgEntries_.size() - 1; iBG >= 0; --iBG)
+        {
+            //Get new histogram
+            bgEntries_[iBG].histName = histName;
+            bgEntries_[iBG].rebin = rebin;
+            bgEntries_[iBG].retrieveHistogram();
+
+            bgStack->Add(bgEntries_[iBG].h.get(), bgEntries_[iBG].drawOptions.c_str());
+            if(!hbgSum) hbgSum = static_cast<TH1*>(bgEntries_[iBG].h->Clone());
+            else        hbgSum->Add(bgEntries_[iBG].h.get());
+        }
+
+        //data
+        //get new histogram from file
+        data_.histName = histName;
+        data_.rebin = rebin;
+        data_.retrieveHistogram();
+        leg->AddEntry(data_.h.get(), data_.legEntry.c_str(), data_.drawOptions.c_str());
+        smartMax(hbgSum, leg, static_cast<TPad*>(gPad), min, max, lmax, true);
+
+        //background
+        for(auto& entry : bgEntries_)
+        {
+            //set fill color so BG will have solid fill
+            entry.setFillColor();
+
+            //add histograms to TLegend
+            leg->AddEntry(entry.h.get(), entry.legEntry.c_str(), "F");
+        }
+        smartMax(hbgSum, leg, static_cast<TPad*>(gPad), min, max, lmax, false);
+
+        //signal 
+        for(auto& entry : sigEntries_)
+        {
+            //get new histogram
+            entry.histName = histName;
+            entry.rebin = rebin;
+            entry.retrieveHistogram();
+
+            //add histograms to TLegend
+            leg->AddEntry(entry.h.get(), entry.legEntry.c_str(), "L");
+            smartMax(entry.h.get(), leg, static_cast<TPad*>(gPad), min, max, lmax, false);
+        }
+
+        //Set Canvas margin (gPad is root magic to access the current pad, in this case canvas "c")
+        gPad->SetLeftMargin(0.12);
+        gPad->SetRightMargin(0.06);
+        gPad->SetTopMargin(0.08);
+        gPad->SetBottomMargin(0.12);
+
+        //create a dummy histogram to act as the axes
+        histInfo dummy(new TH1D("dummy", "dummy", 1000, data_.h->GetBinLowEdge(1), data_.h->GetBinLowEdge(data_.h->GetNbinsX()) + data_.h->GetBinWidth(data_.h->GetNbinsX())));
+        dummy.setupAxes();
+        dummy.h->GetYaxis()->SetTitle(yAxisLabel.c_str());
+        dummy.h->GetXaxis()->SetTitle(xAxisLabel.c_str());
+        //Set the y-range of the histogram
+        if(isLogY)
+        {
+            double locMin = std::min(0.2, std::max(0.2, 0.05 * min));
+            double legSpan = (log10(3*max) - log10(locMin)) * (leg->GetY1() - gPad->GetBottomMargin()) / ((1 - gPad->GetTopMargin()) - gPad->GetBottomMargin());
+            double legMin = legSpan + log10(locMin);
+            if(log10(lmax) > legMin)
+            {
+                double scale = (log10(lmax) - log10(locMin)) / (legMin - log10(locMin));
+                max = pow(max/locMin, scale)*locMin;
+            }
+            dummy.h->GetYaxis()->SetRangeUser(locMin, 10*max);
+        }
+        else
+        {
+            double locMin = 0.0;
+            double legMin = (1.2*max - locMin) * (leg->GetY1() - gPad->GetBottomMargin()) / ((1 - gPad->GetTopMargin()) - gPad->GetBottomMargin());
+            if(lmax > legMin) max *= (lmax - locMin)/(legMin - locMin);
+            dummy.h->GetYaxis()->SetRangeUser(0.0, max*1.2);
+        }
+        //set x-axis range
+        if(xmin < xmax) dummy.h->GetXaxis()->SetRangeUser(xmin, xmax);
+
+        //draw dummy axes
+        dummy.draw();
+
+        //Switch to logY if desired
+        gPad->SetLogy(isLogY);
+
+        //plot background stack
+        bgStack->Draw("same");
+
+        //plot signal histograms
+        for(const auto& entry : sigEntries_)
+        {
+            entry.draw();
+        }
+
+        //plot data histogram
+        data_.draw();
+
+        //plot legend
+        leg->Draw("same");
+
+        //Draw dummy hist again to get axes on top of histograms
+        dummy.draw("AXIS");
+
+        //Draw CMS and lumi lables
+        char lumistamp[128];
+        sprintf(lumistamp, "%.1f fb^{-1} (13 TeV)", lumi / 1000.0);
+
+        TLatex mark;
+        mark.SetNDC(true);
+
+        //Draw CMS mark
+        mark.SetTextAlign(11);
+        mark.SetTextSize(0.050);
+        mark.SetTextFont(61);
+        mark.DrawLatex(gPad->GetLeftMargin(), 1 - (gPad->GetTopMargin() - 0.017), "CMS"); // #scale[0.8]{#it{Preliminary}}");
+        mark.SetTextSize(0.040);
+        mark.SetTextFont(52);
+        mark.DrawLatex(gPad->GetLeftMargin() + 0.11, 1 - (gPad->GetTopMargin() - 0.017), "DAS 2018");
+
+        //Draw lumistamp
+        mark.SetTextFont(42);
+        mark.SetTextAlign(31);
+        mark.DrawLatex(1 - gPad->GetRightMargin(), 1 - (gPad->GetTopMargin() - 0.017), lumistamp);
+
+        //save new plot to file
+        c->Print((histName + ".png").c_str());
+
+        //clean up dynamic memory
+        delete c;
+        delete leg;
+        delete bgStack;
+        delete hbgSum;
+    }
+};
+
+int main()
+{
+    //entry for data
+    //this uses the initializer syntax to initialize the histInfo object
+    //               leg entry  root file                 draw options  draw color
+    histInfo data = {"Data",    "myhistos/Data_MET.root", "PEX0",       kBlack};
 
     //vector summarizing background histograms to include in the plot
     std::vector<histInfo> bgEntries = {
-        {"t#bar{t}",           "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/TTbarNoHad.root",  histName, "hist", kRed,        rebin},
-        {"W+Jets",             "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/WJetsToLNu.root",  histName, "hist", kBlue,       rebin},
-        {"Single top",         "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/ST.root",          histName, "hist", kOrange,     rebin},
-        {"Z#rightarrow#nu#nu", "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/ZJetsToNuNu.root", histName, "hist", kYellow + 2, rebin},
-        {"QCD",                "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/QCD.root",         histName, "hist", kMagenta,    rebin},
-        {"Rare",               "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/Rare.root",        histName, "hist", kGray,       rebin},
+        {"t#bar{t}",           "myhistos/TTbarNoHad.root",   "hist", kRed},
+        {"W+Jets",             "myhistos/WJetsToLNu.root",   "hist", kBlue},
+        {"Single top",         "myhistos/ST.root",           "hist", kOrange},
+        {"Z#rightarrow#nu#nu", "myhistos/ZJetsToNuNu.root",  "hist", kYellow + 2},
+        {"QCD",                "myhistos/QCD.root",          "hist", kMagenta},
+        {"Diboson",            "myhistos/Diboson.root",      "hist", kGreen + 2},
+        {"Rare",               "myhistos/Rare.root",         "hist", kGray},
     };
 
     //vector summarizing signal histograms to include in the plot
     std::vector<histInfo> sigEntries = {
-        {"Signal QCD", "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/QCD.root", histName, "hist", kGreen + 2, rebin},
+        {"Signal QCD", "myhistos/QCD.root", "hist", kGreen + 2},
     };
 
-    //create the canvas for the plot
-    TCanvas *c = new TCanvas("c1", "c1", 800, 800);
-    //switch to the canvas to ensure it is the active object
-    c->cd();
+    //make plotter object with the required sources for histograms specified
+    Plotter plt(std::move(data), std::move(bgEntries), std::move(sigEntries));
 
-    //Create TLegend
-    TLegend *leg = new TLegend(0.50, 0.56, 0.89, 0.88);
-    leg->SetFillStyle(0);
-    leg->SetBorderSize(0);
-    leg->SetLineWidth(1);
-    leg->SetNColumns(1);
-    leg->SetTextFont(42);
-
-    //get maximum from histos and fill TLegend
-    double min = 0.0;
-    double max = 0.0;
-    double lmax = 0.0;
-
-    //Create the THStack for the background ... warning, THStacks are terrible and must be filled "backwards"
-    THStack *bgStack = new THStack();
-    //Make seperate histogram from sum of BG histograms because I don't know how to make a THStack give me this 
-    TH1* hbgSum = nullptr;
-    for(int iBG = bgEntries.size() - 1; iBG >= 0; --iBG)
-    {
-        bgStack->Add(bgEntries[iBG].h.get(), bgEntries[iBG].drawOptions.c_str());
-        if(!hbgSum) hbgSum = static_cast<TH1*>(bgEntries[iBG].h->Clone());
-        else        hbgSum->Add(bgEntries[iBG].h.get());
-    }
-
-    //data
-    leg->AddEntry(data.h.get(), data.legEntry.c_str(), data.drawOptions.c_str());
-    smartMax(hbgSum, leg, static_cast<TPad*>(gPad), min, max, lmax, true);
-
-    //background
-    for(auto& entry : bgEntries)
-    {
-        //set fill color so BG will have solid fill
-        entry.setFillColor();
-
-        //add histograms to TLegend
-        leg->AddEntry(entry.h.get(), entry.legEntry.c_str(), "F");
-    }
-
-    //signal 
-    for(const auto& entry : sigEntries)
-    {
-        //add histograms to TLegend
-        leg->AddEntry(entry.h.get(), entry.legEntry.c_str(), "L");
-        smartMax(entry.h.get(), leg, static_cast<TPad*>(gPad), min, max, lmax, false);
-    }
-
-    //Set Canvas margin (gPad is root magic to access the current pad, in this case canvas "c")
-    gPad->SetLeftMargin(0.12);
-    gPad->SetRightMargin(0.06);
-    gPad->SetTopMargin(0.08);
-    gPad->SetBottomMargin(0.12);
-
-    //create a dummy histogram to act as the axes
-    histInfo dummy(new TH1D("dummy", "dummy", 1000, data.h->GetBinLowEdge(1), data.h->GetBinLowEdge(data.h->GetNbinsX()) + data.h->GetBinWidth(data.h->GetNbinsX())));
-    dummy.setupAxes();
-    dummy.h->GetYaxis()->SetTitle(yAxisLabel.c_str());
-    dummy.h->GetXaxis()->SetTitle(xAxisLabel.c_str());
-    //Set the y-range of the histogram
-    if(isLogY)
-    {
-        double locMin = std::min(0.2, std::max(0.2, 0.05 * min));
-        double legSpan = (log10(3*max) - log10(locMin)) * (leg->GetY1() - gPad->GetBottomMargin()) / ((1 - gPad->GetTopMargin()) - gPad->GetBottomMargin());
-        double legMin = legSpan + log10(locMin);
-        if(log10(lmax) > legMin)
-        {
-            double scale = (log10(lmax) - log10(locMin)) / (legMin - log10(locMin));
-            max = pow(max/locMin, scale)*locMin;
-        }
-        dummy.h->GetYaxis()->SetRangeUser(locMin, 10*max);
-    }
-    else
-    {
-        double locMin = 0.0;
-        double legMin = (1.2*max - locMin) * (leg->GetY1() - gPad->GetBottomMargin()) / ((1 - gPad->GetTopMargin()) - gPad->GetBottomMargin());
-        if(lmax > legMin) max *= (lmax - locMin)/(legMin - locMin);
-        dummy.h->GetYaxis()->SetRangeUser(0.0, max*1.2);
-    }
-    //set x-axis range
-    if(xmin < xmax) dummy.h->GetXaxis()->SetRangeUser(xmin, xmax);
-
-    //draw dummy axes
-    dummy.draw();
-
-    //Switch to logY if desired
-    gPad->SetLogy(isLogY);
-
-    //plot background stack
-    bgStack->Draw("same");
-
-    //plot signal hisrograms
-    for(const auto& entry : sigEntries)
-    {
-        entry.draw();
-    }
-
-    //plot data histogram
-    data.draw();
-
-    //plot legend
-    leg->Draw("same");
-
-    //Draw dummy hist again to get axes on top of histograms
-    dummy.draw("AXIS");
-
-    //Draw CMS and lumi lables
-    char lumistamp[128];
-    sprintf(lumistamp, "%.1f fb^{-1} (13 TeV)", lumi / 1000.0);
-
-    TLatex mark;
-    mark.SetNDC(true);
-
-    //Draw CMS mark
-    mark.SetTextAlign(11);
-    mark.SetTextSize(0.050);
-    mark.SetTextFont(61);
-    mark.DrawLatex(gPad->GetLeftMargin(), 1 - (gPad->GetTopMargin() - 0.017), "CMS"); // #scale[0.8]{#it{Preliminary}}");
-    mark.SetTextSize(0.040);
-    mark.SetTextFont(52);
-    mark.DrawLatex(gPad->GetLeftMargin() + 0.11, 1 - (gPad->GetTopMargin() - 0.017), "DAS 2018");
-
-    //Draw lumistamp
-    mark.SetTextFont(42);
-    mark.SetTextAlign(31);
-    mark.DrawLatex(1 - gPad->GetRightMargin(), 1 - (gPad->GetTopMargin() - 0.017), lumistamp);
-
-    //save new plot to file
-    c->Print((histName + ".png").c_str());
-
-    //clean up dynamic memory
-    delete c;
-    delete leg;
-    delete bgStack;
-    delete hbgSum;
-}
-
-int main()
-{
-    plot("HT", "H_{T} [GeV]", "Events", true, -1, -1, 5);
-    plot("Nt", "N_{T}");
+    plt.plot("HT", "H_{T} [GeV]", "Events", true, -1, -1, 5);
+    plt.plot("Nt", "N_{T}");
 }

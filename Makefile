@@ -24,7 +24,7 @@ LD         = g++
 LIBS       = $(shell root-config --glibs)
 LIBSTOPTAGGER = -L$(TTTDIR) -lTopTagger
 
-PROGRAMS = RunSimpleAnalyzer
+PROGRAMS = RunSimpleAnalyzer plot
 
 
 all: mkobj $(PROGRAMS)
@@ -33,20 +33,23 @@ mkobj:
 	@mkdir -p obj
 
 $(ODIR)/%.o : $(SDIR)/%.C 
-	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS) -fPIC -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS) -o $@ -c $<
 
 $(ODIR)/%.o : $(SDIR)/%.c
-	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS)  -fPIC -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS) -o $@ -c $<
 
 $(ODIR)/%.o : $(SDIR)/%.cc
-	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS)  -fPIC -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS) -o $@ -c $<
 
 $(ODIR)/%.o : $(SDIR)/%.cpp
-	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS)  -fPIC -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS) -o $@ -c $<
 
 
 RunSimpleAnalyzer: $(ODIR)/RunSimpleAnalyzer.o $(ODIR)/SimpleAnalyzer.o $(ODIR)/samples.o $(ODIR)/BaseTuple.o
-	$(LD) $^ $(LIBS) $(LIBSTOPTAGGER) -fPIC -o $@
+	$(LD) $^ $(LIBS) $(LIBSTOPTAGGER) -o $@
+
+plot : $(ODIR)/plot.o
+	$(LD) $^ $(LIBS) -o $@
 
 clean:
 	rm -f $(ODIR)/*.o $(ODIR)/*.so $(ODIR)/*.d $(PROGRAMS) core 

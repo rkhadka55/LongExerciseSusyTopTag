@@ -10,6 +10,7 @@
 #include <string>
 #include <cstdio>
 
+//This is a helper function which will keep the plot from overlapping with the legend
 void smartMax(const TH1 * const h, const TLegend* const l, const TPad* const p, double& gmin, double& gmax, double& gpThreshMax, const bool error)
 {
     const bool isLog = p->GetLogy();
@@ -17,7 +18,6 @@ void smartMax(const TH1 * const h, const TLegend* const l, const TPad* const p, 
     double max = -9e99;
     double pThreshMax = -9e99;
     int threshold = static_cast<int>(h->GetNbinsX()*(l->GetX1() - p->GetLeftMargin())/((1 - p->GetRightMargin()) - p->GetLeftMargin()));
-    printf("thresh %d\n", threshold);
 
     for(int i = 1; i <= h->GetNbinsX(); ++i)
     {
@@ -34,6 +34,7 @@ void smartMax(const TH1 * const h, const TLegend* const l, const TPad* const p, 
     gmin = std::min(gmin, min);
 }
 
+//Class to hold TH1* with various helper functions 
 class histInfo
 {
 public:
@@ -126,21 +127,23 @@ void plot(const std::string& histName, const std::string& xAxisLabel, const std:
     TH1::AddDirectory(false);
 
     //entry for data
-    histInfo data = {"Data", "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/Data_MET.root", histName, "PEX0", kBlack, rebin};
+    //this uses the initializer syntax to initialize the histInfo object
+    histInfo data = {"Data", "myhistos/Data_MET.root", histName, "PEX0", kBlack, rebin};
 
     //vector summarizing background histograms to include in the plot
     std::vector<histInfo> bgEntries = {
-        {"t#bar{t}",           "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/TTbarNoHad.root",  histName, "hist", kRed,        rebin},
-        {"W+Jets",             "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/WJetsToLNu.root",  histName, "hist", kBlue,       rebin},
-        {"Single top",         "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/ST.root",          histName, "hist", kOrange,     rebin},
-        {"Z#rightarrow#nu#nu", "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/ZJetsToNuNu.root", histName, "hist", kYellow + 2, rebin},
-        {"QCD",                "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/QCD.root",         histName, "hist", kMagenta,    rebin},
-        {"Rare",               "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/Rare.root",        histName, "hist", kGray,       rebin},
+        {"t#bar{t}",           "myhistos/TTbarNoHad.root",   histName, "hist", kRed,        rebin},
+        {"W+Jets",             "myhistos/WJetsToLNu.root",   histName, "hist", kBlue,       rebin},
+        {"Single top",         "myhistos/ST.root",           histName, "hist", kOrange,     rebin},
+        {"Z#rightarrow#nu#nu", "myhistos/ZJetsToNuNu.root",  histName, "hist", kYellow + 2, rebin},
+        {"QCD",                "myhistos/QCD.root",          histName, "hist", kMagenta,    rebin},
+        {"Diboson",            "myhistos/Diboson.root",      histName, "hist", kGreen + 2,  rebin},
+        {"Rare",               "myhistos/Rare.root",         histName, "hist", kGray,       rebin},
     };
 
     //vector summarizing signal histograms to include in the plot
     std::vector<histInfo> sigEntries = {
-        {"Signal QCD", "/uscms_data/d3/nstrobbe/DAS2018/CMSSW_9_3_3/src/LongExerciseSusyTopTag/myhistos/QCD.root", histName, "hist", kGreen + 2, rebin},
+        {"Signal QCD", "myhistos/QCD.root", histName, "hist", kGreen + 2, rebin},
     };
 
     //create the canvas for the plot
@@ -185,6 +188,7 @@ void plot(const std::string& histName, const std::string& xAxisLabel, const std:
         //add histograms to TLegend
         leg->AddEntry(entry.h.get(), entry.legEntry.c_str(), "F");
     }
+    smartMax(hbgSum, leg, static_cast<TPad*>(gPad), min, max, lmax, false);
 
     //signal 
     for(const auto& entry : sigEntries)
@@ -237,7 +241,7 @@ void plot(const std::string& histName, const std::string& xAxisLabel, const std:
     //plot background stack
     bgStack->Draw("same");
 
-    //plot signal hisrograms
+    //plot signal histograms
     for(const auto& entry : sigEntries)
     {
         entry.draw();

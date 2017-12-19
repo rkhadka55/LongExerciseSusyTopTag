@@ -1,0 +1,13 @@
+*.root
+*~
+*.xgb
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.cfg
+*.pyc
+*.o
+*.so
+*.a
+*.pb

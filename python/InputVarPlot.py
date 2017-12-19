@@ -116,12 +116,12 @@ for var in varsname:
     print var
     plt.clf()
     bins = numpy.linspace(minTTbar[var], maxTTbar[var], 21)
-    ax = genTopData.hist(column=var, weights=genTopData["sampleWgt"],  bins=bins, grid=False, normed=True, fill=False, histtype='step', label="gen top")
-    genBGData      .hist(column=var, weights=genBGData["sampleWgt"],   bins=bins, grid=False, normed=True, fill=False, histtype='step', label="gen bkg", ax=ax)
+    ax = genTopData.hist(column=var, weights=genTopData["sampleWgt"],  bins=bins, grid=False, normed=False, fill=False, histtype='step', label="gen top")
+    genBGData      .hist(column=var, weights=genBGData["sampleWgt"],   bins=bins, grid=False, normed=False, fill=False, histtype='step', label="gen bkg", ax=ax)
     plt.legend()
     plt.xlabel(var)
     plt.ylabel("Normalized events")
-    plt.yscale('log')
+    #plt.yscale('log')
     plt.savefig(outputDirectory + var + ".png")
     plt.close()
   except UnboundLocalError:

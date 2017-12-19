@@ -1,13 +1,13 @@
-IDIR       = .
+IDIR       = include
 ODIR       = obj
-SDIR       = .
+SDIR       = src
 
 TTDIR  = $(CMSSW_BASE)/src/TopTagger/
 TTTDIR     = $(TTDIR)/TopTagger/test
 
 CXX        = g++
 
-CXXFLAGS  += -I. -I$(CMSSW_BASE)/src -std=c++0x
+CXXFLAGS  += -I$(IDIR) -I$(CMSSW_BASE)/src -std=c++0x
 ## Optimization flag
 CXXFLAGS += -g -O3
 ## Enable the maximun warning

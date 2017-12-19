@@ -21,6 +21,7 @@ def main():
     parser.add_option('-d', "--directory",   dest='directory',   action='store',      default="",               help="Directory to store outputs")
     parser.add_option('-f', "--files",       dest='files',       action='store',      default="",               help="ROC pkl files, semicolon seperated")
     parser.add_option('-l', "--labels",      dest='labels',      action='store',      default="",               help="Legend labels for each ROC pkl file, semicolon seperated")
+    parser.add_option('-n', "--name",        dest='name',        action='store',      default="DAS",            help="String to add to plot name to identify this figure")
     
     options, args = parser.parse_args()
 
@@ -38,6 +39,7 @@ def main():
           else:
               raise
     
+    p.name = options.name
     p.files  = options.files.split(";")
     if len(options.labels):
         p.labels = options.labels.split(";")
@@ -54,7 +56,7 @@ def makeCutPlots(plotter):
     style = "solid"
 
     # get files
-    name = "DAS"
+    name = p.name
     files = p.files
     labels = p.labels
     

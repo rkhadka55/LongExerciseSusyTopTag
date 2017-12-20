@@ -24,7 +24,7 @@ LD         = g++
 LIBS       = $(shell root-config --glibs)
 LIBSTOPTAGGER = -L$(TTTDIR) -lTopTagger
 
-PROGRAMS = RunSimpleAnalyzer plot
+PROGRAMS = RunSimpleAnalyzer plot RunLostLeptonBackground
 
 
 all: mkobj $(PROGRAMS)
@@ -50,6 +50,9 @@ RunSimpleAnalyzer: $(ODIR)/RunSimpleAnalyzer.o $(ODIR)/SimpleAnalyzer.o $(ODIR)/
 
 plot : $(ODIR)/plot.o
 	$(LD) $^ $(LIBS) -o $@
+
+RunLostLeptonBackground: $(ODIR)/RunLostLeptonBackground.o $(ODIR)/LostLeptonBackground.o $(ODIR)/samples.o $(ODIR)/BaseTuple.o
+	$(LD) $^ $(LIBS) $(LIBSTOPTAGGER) -o $@
 
 clean:
 	rm -f $(ODIR)/*.o $(ODIR)/*.so $(ODIR)/*.d $(PROGRAMS) core 

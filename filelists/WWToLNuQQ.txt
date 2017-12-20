@@ -1,0 +1,6 @@
+root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_WWToLNuQQ_0_WWToLNuQQ.root
+root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_WWToLNuQQ_100_WWToLNuQQ.root
+root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_WWToLNuQQ_20_WWToLNuQQ.root
+root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_WWToLNuQQ_40_WWToLNuQQ.root
+root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_WWToLNuQQ_60_WWToLNuQQ.root
+root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_WWToLNuQQ_80_WWToLNuQQ.root

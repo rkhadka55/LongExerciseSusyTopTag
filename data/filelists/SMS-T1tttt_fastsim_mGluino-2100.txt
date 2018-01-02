@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/user/cmsdas/2018/long_exercises/SUSYTopTagging/analysisNTuples/susyTopTagging_SMS-T1tttt_fastsim_mGluino-2100.root

@@ -26,7 +26,9 @@ if __name__ == "__main__":
                   "QCD",
                   "ST",
                   "Diboson",
-                  "Data_MET"
+                  "Data_MET",
+                  "Signal_fastsim_T2tt",
+                  "Signal_fastsim_T1tttt"
                   ]
     
     my_list = []

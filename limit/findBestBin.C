@@ -3,7 +3,7 @@ string makeFileName(string signame, int mass, int bin){
 }
 
 //usage:
-//root -l 'findBestBin.C("T2tt",800,{4,5,7,8,9})'
+//root -l 'findBestBin.C("T2tt",800,{1,2,3,4,5})'
 void findBestBin(string signame, int mass, vector<int> bins){
 	double rmin = 1e10;
 	double bestbin = -1;
@@ -56,7 +56,7 @@ void findAll(){
 		if(signame=="T2tt") masses = {800,900,1000,1100,1200};
 		else masses = {1700,1800,1900,2000,2100};
 		for(auto mass : masses){
-			findBestBin(signame,mass,{4,5,7,8,9});
+			findBestBin(signame,mass,{1,2,3,4,5});
 		}
 	}
 }

@@ -158,18 +158,18 @@ namespace AnaSamples
         // ----------
         
         // T2tt
-        addSample("SMS-T2tt_fastsim_mStop-800",  "data/filelists/SMS-T2tt_fastsim_mStop-800.txt",  "slimmedTuple", 1.0, 1.0, 1.0, 1.0, kRed);
-        addSample("SMS-T2tt_fastsim_mStop-900",  "data/filelists/SMS-T2tt_fastsim_mStop-900.txt",  "slimmedTuple", 1.0, 1.0, 1.0, 1.0, kRed);
-        addSample("SMS-T2tt_fastsim_mStop-1000", "data/filelists/SMS-T2tt_fastsim_mStop-1000.txt", "slimmedTuple", 1.0, 1.0, 1.0, 1.0, kRed);
-        addSample("SMS-T2tt_fastsim_mStop-1100", "data/filelists/SMS-T2tt_fastsim_mStop-1100.txt", "slimmedTuple", 1.0, 1.0, 1.0, 1.0, kRed);
-        addSample("SMS-T2tt_fastsim_mStop-1200", "data/filelists/SMS-T2tt_fastsim_mStop-1200.txt", "slimmedTuple", 1.0, 1.0, 1.0, 1.0, kRed);
+        addSample("SMS-T2tt_fastsim_mStop-800",  "data/filelists/SMS-T2tt_fastsim_mStop-800.txt",  "slimmedTuple", 1.0, 1.0, 18533.0, 1.0, kRed);
+        addSample("SMS-T2tt_fastsim_mStop-900",  "data/filelists/SMS-T2tt_fastsim_mStop-900.txt",  "slimmedTuple", 1.0, 1.0, 19667.0, 1.0, kRed);
+        addSample("SMS-T2tt_fastsim_mStop-1000", "data/filelists/SMS-T2tt_fastsim_mStop-1000.txt", "slimmedTuple", 1.0, 1.0, 19536.0, 1.0, kRed);
+        addSample("SMS-T2tt_fastsim_mStop-1100", "data/filelists/SMS-T2tt_fastsim_mStop-1100.txt", "slimmedTuple", 1.0, 1.0, 17516.0, 1.0, kRed);
+        addSample("SMS-T2tt_fastsim_mStop-1200", "data/filelists/SMS-T2tt_fastsim_mStop-1200.txt", "slimmedTuple", 1.0, 1.0, 16938.0, 1.0, kRed);
 
         // T1tttt
-        addSample("SMS-T1tttt_fastsim_mGluino-1700", "data/filelists/SMS-T1tttt_fastsim_mGluino-1700.txt", "slimmedTuple", 1.0, 1.0, 1.0, 1.0, kRed);
-        addSample("SMS-T1tttt_fastsim_mGluino-1800", "data/filelists/SMS-T1tttt_fastsim_mGluino-1800.txt", "slimmedTuple", 1.0, 1.0, 1.0, 1.0, kRed);
-        addSample("SMS-T1tttt_fastsim_mGluino-1900", "data/filelists/SMS-T1tttt_fastsim_mGluino-1900.txt", "slimmedTuple", 1.0, 1.0, 1.0, 1.0, kRed);
-        addSample("SMS-T1tttt_fastsim_mGluino-2000", "data/filelists/SMS-T1tttt_fastsim_mGluino-2000.txt", "slimmedTuple", 1.0, 1.0, 1.0, 1.0, kRed);
-        addSample("SMS-T1tttt_fastsim_mGluino-2100", "data/filelists/SMS-T1tttt_fastsim_mGluino-2100.txt", "slimmedTuple", 1.0, 1.0, 1.0, 1.0, kRed);
+        addSample("SMS-T1tttt_fastsim_mGluino-1700", "data/filelists/SMS-T1tttt_fastsim_mGluino-1700.txt", "slimmedTuple", 1.0, 1.0, 20163.0, 1.0, kRed);
+        addSample("SMS-T1tttt_fastsim_mGluino-1800", "data/filelists/SMS-T1tttt_fastsim_mGluino-1800.txt", "slimmedTuple", 1.0, 1.0, 19650.0, 1.0, kRed);
+        addSample("SMS-T1tttt_fastsim_mGluino-1900", "data/filelists/SMS-T1tttt_fastsim_mGluino-1900.txt", "slimmedTuple", 1.0, 1.0, 16778.0, 1.0, kRed);
+        addSample("SMS-T1tttt_fastsim_mGluino-2000", "data/filelists/SMS-T1tttt_fastsim_mGluino-2000.txt", "slimmedTuple", 1.0, 1.0, 21897.0, 1.0, kRed);
+        addSample("SMS-T1tttt_fastsim_mGluino-2100", "data/filelists/SMS-T1tttt_fastsim_mGluino-2100.txt", "slimmedTuple", 1.0, 1.0, 20243.0, 1.0, kRed);
     }
 
     SampleCollection::SampleCollection(SampleSet& samples)

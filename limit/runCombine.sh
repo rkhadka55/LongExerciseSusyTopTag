@@ -11,7 +11,7 @@ runCombine(){
 	fi
 
 	cd cards
-	for CHAN in 4 5 7 8 9; do
+	for CHAN in 1 2 3 4 5; do
 		for MASS in ${MASSES[@]}; do
 			CARDNAME=simpleCard_ch${CHAN}_${SIGNAME}_${MASS}
 			combine -m ${MASS} -n _${CARDNAME} -M Asymptotic ${CARDNAME}.txt

@@ -274,7 +274,7 @@ if not numpy.any(effPt):
     effPt[-1] = 0.00001
 plt.hist(effPtBins[:-1], bins=effPtBins, weights=effPt,      fill=False, histtype='step', label="Test")
 plt.hist(effPtBins[:-1], bins=effPtBins, weights=effPtTrain, fill=False, histtype='step', label="Training", linestyle="dotted")
-#plt.legend(loc='upper right')
+plt.legend(loc='upper right')
 plt.xlabel("Candidate Pt [GeV]")
 plt.ylabel("Efficiency")
 plt.savefig(outputDirectory + "efficiency.png")

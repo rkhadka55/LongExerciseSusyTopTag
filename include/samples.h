@@ -20,9 +20,10 @@ namespace AnaSamples
     double xsec, lumi, kfactor, nEvts;
     int color;
     bool isData_;
+    bool isFastSim_;
         
     FileSummary() {}
-    FileSummary(std::string tag, std::string filePath, std::string treePath, double xsec, double lumi, double nEvts, double kfactor, int color = kBlack) : tag(tag), filePath(filePath), treePath(treePath), xsec(xsec), lumi(lumi), kfactor(kfactor), nEvts(nEvts), color(color), isData_(false)
+    FileSummary(std::string tag, std::string filePath, std::string treePath, double xsec, double lumi, double nEvts, double kfactor, int color = kBlack, bool isFastSim = false) : tag(tag), filePath(filePath), treePath(treePath), xsec(xsec), lumi(lumi), kfactor(kfactor), nEvts(nEvts), color(color), isData_(false), isFastSim_(isFastSim)
     {
       weight_ = xsec * lumi * kfactor / nEvts;
     }
@@ -96,9 +97,9 @@ namespace AnaSamples
    
    public:
     SampleSet(std::string fDir = fileDir, double lumi = luminosity);
-    void addSample(std::string tag, std::string filePath, std::string treePath, double xsec, double lumi, double nEvts, double kfactor, int color = kBlack) 
+    void addSample(std::string tag, std::string filePath, std::string treePath, double xsec, double lumi, double nEvts, double kfactor, int color = kBlack, bool isFastSim = false) 
     {
-      sampleSet_[tag] = FileSummary(tag, filePath, treePath, xsec, lumi, nEvts, kfactor, color);
+      sampleSet_[tag] = FileSummary(tag, filePath, treePath, xsec, lumi, nEvts, kfactor, color, isFastSim);
     }
 
     void addSample(std::string tag, std::string filePath, std::string treePath, double lumi, double kfactor, int color = kBlack) 

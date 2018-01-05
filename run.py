@@ -20,15 +20,27 @@ if __name__ == "__main__":
         os.mkdir(args.outdir)
 
     samplelist = ["TTbarNoHad",
+                  "ttbarW",
                   "Rare",
                   "WJetsToLNu",
                   "ZJetsToNuNu",
                   "QCD",
                   "ST",
                   "Diboson",
+                  "TTZ",
                   "Data_MET",
                   "Signal_fastsim_T2tt",
-                  "Signal_fastsim_T1tttt"
+                  "Signal_fastsim_T2tt_mStop-800",
+                  "Signal_fastsim_T2tt_mStop-900",
+                  "Signal_fastsim_T2tt_mStop-1000",
+                  "Signal_fastsim_T2tt_mStop-1100",
+                  "Signal_fastsim_T2tt_mStop-1200",
+                  "Signal_fastsim_T1tttt",
+                  "Signal_fastsim_T1tttt_mGluino-1700",
+                  "Signal_fastsim_T1tttt_mGluino-1800",
+                  "Signal_fastsim_T1tttt_mGluino-1900",
+                  "Signal_fastsim_T1tttt_mGluino-2000",
+                  "Signal_fastsim_T1tttt_mGluino-2100"
                   ]
     
     my_list = []

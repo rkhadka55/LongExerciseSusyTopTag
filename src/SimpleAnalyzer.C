@@ -29,7 +29,7 @@ void SimpleAnalyzer::InitHistos()
 
 }
 
-void SimpleAnalyzer::Loop(double weight, int maxevents=-1)
+void SimpleAnalyzer::Loop(double weight, int maxevents, bool isFastSim)
 {
 //    This is the loop skeleton where:
 //    jentry is the global entry number in the chain
@@ -97,7 +97,7 @@ void SimpleAnalyzer::Loop(double weight, int maxevents=-1)
       // --- Apply some selection ---
       // ----------------------------
 
-      if(!(passNoiseEventFilter && passSearchTrigger && passnJets && passdPhis 
+      if(!(passNoiseEventFilter && (isFastSim || passSearchTrigger) && passnJets && passdPhis 
            && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets))
           continue;
 
@@ -137,22 +137,22 @@ void SimpleAnalyzer::Loop(double weight, int maxevents=-1)
           my_histos["weight_sq"]->Fill(1., total_weight*total_weight);
           my_histos["met_SB1"]->Fill(met, total_weight);
       } 
-      else if(SB2)
+      if(SB2)
       {
           my_histos["counts"]->Fill(2, total_weight);
           my_histos["weight_sq"]->Fill(2, total_weight*total_weight);
       }
-      else if(SB3)
+      if(SB3)
       {
           my_histos["counts"]->Fill(3, total_weight);
           my_histos["weight_sq"]->Fill(3, total_weight*total_weight);
       }
-      else if(SB4)
+      if(SB4)
       {
           my_histos["counts"]->Fill(4, total_weight);
           my_histos["weight_sq"]->Fill(4, total_weight*total_weight);
       }
-      else if(SB5)
+      if(SB5)
       {
           my_histos["counts"]->Fill(5, total_weight);
           my_histos["weight_sq"]->Fill(5, total_weight*total_weight);

@@ -9,6 +9,7 @@
 
 #include <TH1D.h>
 #include "BaseTuple.h"
+#include "samples.h"
 
 #include <map>
 #include <string>
@@ -19,7 +20,7 @@ public :
 
    SimpleAnalyzer(TTree* tree) : BaseTuple(tree) {}
 
-   virtual void     Loop(double weight, int maxevents);
+   virtual void     Loop(double weight, int maxevents = -1, bool isFastSim = false);
    virtual void     InitHistos();
    virtual void     WriteHistos();
 

@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
             //std::cout << "Chain has " << new_ch->GetEntries() << " entries." << std::endl;
             weight = f.getWeight();
             std::cout << "Starting loop for " << f.tag << std::endl;
-            t.Loop(weight, maxevents);
+            t.Loop(weight, maxevents, f.isFastSim_);
         }
         t.WriteHistos();
     }

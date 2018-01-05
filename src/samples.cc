@@ -60,7 +60,7 @@ namespace AnaSamples
 
 
         // From https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#W_jets, kw = 1.21
-        addSample("WJetsToLNu_HT_70to100",    "data/filelists/WJetsToLNu_HT_70to100.txt",    "slimmedTuple", 1319,    lumi, 10034066,  1.21, kMagenta+1);
+        //addSample("WJetsToLNu_HT_70to100",    "data/filelists/WJetsToLNu_HT_70to100.txt",    "slimmedTuple", 1319,    lumi, 10034066,  1.21, kMagenta+1);
         addSample("WJetsToLNu_HT_100to200",   "data/filelists/WJetsToLNu_HT_100to200.txt",   "slimmedTuple", 1345,    lumi, 79065975,  1.21, kMagenta+1);
         addSample("WJetsToLNu_HT_200to400",   "data/filelists/WJetsToLNu_HT_200to400.txt",   "slimmedTuple", 359.7,   lumi, 38867206,  1.21, kMagenta+1);
         addSample("WJetsToLNu_HT_400to600",   "data/filelists/WJetsToLNu_HT_400to600.txt",   "slimmedTuple", 48.91,   lumi, 7759701,   1.21, kMagenta+1);
@@ -158,18 +158,18 @@ namespace AnaSamples
         // ----------
         
         // T2tt
-        addSample("SMS-T2tt_fastsim_mStop-800",  "data/filelists/SMS-T2tt_fastsim_mStop-800.txt",  "slimmedTuple", 1.0, 1.0, 18533.0, 1.0, kRed);
-        addSample("SMS-T2tt_fastsim_mStop-900",  "data/filelists/SMS-T2tt_fastsim_mStop-900.txt",  "slimmedTuple", 1.0, 1.0, 19667.0, 1.0, kRed);
-        addSample("SMS-T2tt_fastsim_mStop-1000", "data/filelists/SMS-T2tt_fastsim_mStop-1000.txt", "slimmedTuple", 1.0, 1.0, 19536.0, 1.0, kRed);
-        addSample("SMS-T2tt_fastsim_mStop-1100", "data/filelists/SMS-T2tt_fastsim_mStop-1100.txt", "slimmedTuple", 1.0, 1.0, 17516.0, 1.0, kRed);
-        addSample("SMS-T2tt_fastsim_mStop-1200", "data/filelists/SMS-T2tt_fastsim_mStop-1200.txt", "slimmedTuple", 1.0, 1.0, 16938.0, 1.0, kRed);
+        addSample("SMS-T2tt_fastsim_mStop-800",  "data/filelists/SMS-T2tt_fastsim_mStop-800.txt",  "slimmedTuple", 1.0, 1.0, 18533.0, 1.0, kRed, true);
+        addSample("SMS-T2tt_fastsim_mStop-900",  "data/filelists/SMS-T2tt_fastsim_mStop-900.txt",  "slimmedTuple", 1.0, 1.0, 19667.0, 1.0, kRed, true);
+        addSample("SMS-T2tt_fastsim_mStop-1000", "data/filelists/SMS-T2tt_fastsim_mStop-1000.txt", "slimmedTuple", 1.0, 1.0, 19536.0, 1.0, kRed, true);
+        addSample("SMS-T2tt_fastsim_mStop-1100", "data/filelists/SMS-T2tt_fastsim_mStop-1100.txt", "slimmedTuple", 1.0, 1.0, 17516.0, 1.0, kRed, true);
+        addSample("SMS-T2tt_fastsim_mStop-1200", "data/filelists/SMS-T2tt_fastsim_mStop-1200.txt", "slimmedTuple", 1.0, 1.0, 16938.0, 1.0, kRed, true);
 
         // T1tttt
-        addSample("SMS-T1tttt_fastsim_mGluino-1700", "data/filelists/SMS-T1tttt_fastsim_mGluino-1700.txt", "slimmedTuple", 1.0, 1.0, 20163.0, 1.0, kRed);
-        addSample("SMS-T1tttt_fastsim_mGluino-1800", "data/filelists/SMS-T1tttt_fastsim_mGluino-1800.txt", "slimmedTuple", 1.0, 1.0, 19650.0, 1.0, kRed);
-        addSample("SMS-T1tttt_fastsim_mGluino-1900", "data/filelists/SMS-T1tttt_fastsim_mGluino-1900.txt", "slimmedTuple", 1.0, 1.0, 16778.0, 1.0, kRed);
-        addSample("SMS-T1tttt_fastsim_mGluino-2000", "data/filelists/SMS-T1tttt_fastsim_mGluino-2000.txt", "slimmedTuple", 1.0, 1.0, 21897.0, 1.0, kRed);
-        addSample("SMS-T1tttt_fastsim_mGluino-2100", "data/filelists/SMS-T1tttt_fastsim_mGluino-2100.txt", "slimmedTuple", 1.0, 1.0, 20243.0, 1.0, kRed);
+        addSample("SMS-T1tttt_fastsim_mGluino-1700", "data/filelists/SMS-T1tttt_fastsim_mGluino-1700.txt", "slimmedTuple", 1.0, 1.0, 20163.0, 1.0, kRed, true);
+        addSample("SMS-T1tttt_fastsim_mGluino-1800", "data/filelists/SMS-T1tttt_fastsim_mGluino-1800.txt", "slimmedTuple", 1.0, 1.0, 19650.0, 1.0, kRed, true);
+        addSample("SMS-T1tttt_fastsim_mGluino-1900", "data/filelists/SMS-T1tttt_fastsim_mGluino-1900.txt", "slimmedTuple", 1.0, 1.0, 16778.0, 1.0, kRed, true);
+        addSample("SMS-T1tttt_fastsim_mGluino-2000", "data/filelists/SMS-T1tttt_fastsim_mGluino-2000.txt", "slimmedTuple", 1.0, 1.0, 21897.0, 1.0, kRed, true);
+        addSample("SMS-T1tttt_fastsim_mGluino-2100", "data/filelists/SMS-T1tttt_fastsim_mGluino-2100.txt", "slimmedTuple", 1.0, 1.0, 20243.0, 1.0, kRed, true);
     }
 
     SampleCollection::SampleCollection(SampleSet& samples)
@@ -178,8 +178,9 @@ namespace AnaSamples
         addSampleSet(samples, "TTbarSingleLep", {"TTbarSingleLepT", "TTbarSingleLepTbar"});
         addSampleSet(samples, "TTbarDiLep", {"TTbarDiLep"});
         addSampleSet(samples, "TTbarNoHad", {"TTbarSingleLepT", "TTbarSingleLepTbar", "TTbarDiLep"});
+        addSampleSet(samples, "ttbarW", {"TTbarSingleLepT", "TTbarSingleLepTbar", "TTbarDiLep","WJetsToLNu_HT_2500toInf", "WJetsToLNu_HT_1200to2500", "WJetsToLNu_HT_800to1200", "WJetsToLNu_HT_600to800", "WJetsToLNu_HT_400to600", "WJetsToLNu_HT_200to400", "WJetsToLNu_HT_100to200", /*"WJetsToLNu_HT_70to100",*/ "tW_top_NoHad", "tW_antitop_NoHad", "ST_s", "ST_t_top", "ST_t_antitop", "tZq_ll", "ST_tWll", "ST_tWnunu"});
 
-        addSampleSet(samples, "WJetsToLNu", {"WJetsToLNu_HT_2500toInf", "WJetsToLNu_HT_1200to2500", "WJetsToLNu_HT_800to1200", "WJetsToLNu_HT_600to800", "WJetsToLNu_HT_400to600", "WJetsToLNu_HT_200to400", "WJetsToLNu_HT_100to200", "WJetsToLNu_HT_70to100"});
+        addSampleSet(samples, "WJetsToLNu", {"WJetsToLNu_HT_2500toInf", "WJetsToLNu_HT_1200to2500", "WJetsToLNu_HT_800to1200", "WJetsToLNu_HT_600to800", "WJetsToLNu_HT_400to600", "WJetsToLNu_HT_200to400", "WJetsToLNu_HT_100to200"/*, "WJetsToLNu_HT_70to100"*/});
 
         addSampleSet(samples, "ZJetsToNuNu", {"ZJetsToNuNu_HT_2500toInf", "ZJetsToNuNu_HT_1200to2500", "ZJetsToNuNu_HT_800to1200", "ZJetsToNuNu_HT_600to800", "ZJetsToNuNu_HT_400to600", "ZJetsToNuNu_HT_200to400", "ZJetsToNuNu_HT_100to200"});
 
@@ -206,8 +207,18 @@ namespace AnaSamples
         addSampleSet(samples, "Data_MET", {"Data_MET_2016"});
 
         addSampleSet(samples, "Signal_fastsim_T2tt", {"SMS-T2tt_fastsim_mStop-800", "SMS-T2tt_fastsim_mStop-900", "SMS-T2tt_fastsim_mStop-1000", "SMS-T2tt_fastsim_mStop-1100", "SMS-T2tt_fastsim_mStop-1200"});
+        addSampleSet(samples, "Signal_fastsim_T2tt_mStop-800", {"SMS-T2tt_fastsim_mStop-800"});
+        addSampleSet(samples, "Signal_fastsim_T2tt_mStop-900", {"SMS-T2tt_fastsim_mStop-900"});
+        addSampleSet(samples, "Signal_fastsim_T2tt_mStop-1000", {"SMS-T2tt_fastsim_mStop-1000"});
+        addSampleSet(samples, "Signal_fastsim_T2tt_mStop-1100", {"SMS-T2tt_fastsim_mStop-1100"});
+        addSampleSet(samples, "Signal_fastsim_T2tt_mStop-1200", {"SMS-T2tt_fastsim_mStop-1200"});
 
         addSampleSet(samples, "Signal_fastsim_T1tttt", {"SMS-T1tttt_fastsim_mGluino-1700", "SMS-T1tttt_fastsim_mGluino-1800", "SMS-T1tttt_fastsim_mGluino-1900", "SMS-T1tttt_fastsim_mGluino-2000", "SMS-T1tttt_fastsim_mGluino-2100"});
+        addSampleSet(samples, "Signal_fastsim_T1tttt_mGluino-1700", {"SMS-T1tttt_fastsim_mGluino-1700"});
+        addSampleSet(samples, "Signal_fastsim_T1tttt_mGluino-1800", {"SMS-T1tttt_fastsim_mGluino-1800"});
+        addSampleSet(samples, "Signal_fastsim_T1tttt_mGluino-1900", {"SMS-T1tttt_fastsim_mGluino-1900"});
+        addSampleSet(samples, "Signal_fastsim_T1tttt_mGluino-2000", {"SMS-T1tttt_fastsim_mGluino-2000"});
+        addSampleSet(samples, "Signal_fastsim_T1tttt_mGluino-2100", {"SMS-T1tttt_fastsim_mGluino-2100"});
 
     }
 

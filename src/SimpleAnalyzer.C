@@ -90,7 +90,7 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isFastSim)
       
       // Create jets constituents list combining AK4 and AK8 jets, these are used to construct top candiates
       // The vector of input constituents can also be constructed "by hand"
-      std::vector<Constituent> constituents;// = ttUtility::packageConstituents(AK4Inputs, AK8Inputs);
+      std::vector<Constituent> constituents = ttUtility::packageConstituents(AK4Inputs, AK8Inputs);
 
       // run the top tagger
       tt.runTagger(constituents);

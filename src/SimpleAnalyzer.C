@@ -58,6 +58,14 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isFastSim)
       if (jentry%5000 == 0)
           std::cout << "At event " << jentry << std::endl;
 
+      // ----------------------------
+      // --- Apply some selection ---
+      // ----------------------------
+
+      if(!(passNoiseEventFilter && (isFastSim || passSearchTrigger) && passnJets && passdPhis 
+           && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets))
+          continue;
+
       // ------------------
       // --- TOP TAGGER ---
       // ------------------
@@ -82,7 +90,7 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isFastSim)
       
       // Create jets constituents list combining AK4 and AK8 jets, these are used to construct top candiates
       // The vector of input constituents can also be constructed "by hand"
-      std::vector<Constituent> constituents = ttUtility::packageConstituents(AK4Inputs, AK8Inputs);
+      std::vector<Constituent> constituents;// = ttUtility::packageConstituents(AK4Inputs, AK8Inputs);
 
       // run the top tagger
       tt.runTagger(constituents);
@@ -93,14 +101,6 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isFastSim)
       //get reconstructed tops
       const std::vector<TopObject*>& tops = ttr.getTops();
       
-      // ----------------------------
-      // --- Apply some selection ---
-      // ----------------------------
-
-      if(!(passNoiseEventFilter && (isFastSim || passSearchTrigger) && passnJets && passdPhis 
-           && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets))
-          continue;
-
       int ntop = tops.size();
       // Make MET into a TLorentzVector
       TLorentzVector metLV;

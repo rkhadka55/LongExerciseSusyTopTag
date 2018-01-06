@@ -54,13 +54,13 @@ def makeCards(iname,oname):
             line = line.rstrip()
             linesplit = line.split(',')
             if linesplit[0]=="obs":
-                obs = int(linesplit[1])
+                obs = int(float(linesplit[1]))
             elif linesplit[0]=="signal" or linesplit[0]=="T1tttt" or linesplit[0]=="T2tt":
                 signals.append(
                     proc(
                         linesplit[0],
                         mass = int(linesplit[1]),
-                        count = int(linesplit[2]),
+                        count = int(float(linesplit[2])),
                         weight = float(linesplit[3]),
                         syst = float(linesplit[4])
                     )
@@ -69,7 +69,7 @@ def makeCards(iname,oname):
                 bkgs.append(
                     proc(
                         linesplit[0],
-                        count = int(linesplit[1]),
+                        count = int(float(linesplit[1])),
                         weight = float(linesplit[2]),
                         syst = float(linesplit[3])
                     )

@@ -8,7 +8,8 @@ import tqdm
 def runSimpleAnalyzer(optlist):
     command = ["./RunSimpleAnalyzer"]
     command.extend(optlist)
-    #print "running command", " ".join(command)
+    if "-Q" not in optlist:
+        print "running command", " ".join(command)
     subprocess.call(command)
 
 if __name__ == "__main__":

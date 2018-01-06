@@ -15,6 +15,7 @@
 #include "TopTagger/TopTagger/include/TopTaggerResults.h"
 #include "TopTagger/TopTagger/include/TopTaggerUtilities.h"
 #include "TopTagger/CfgParser/include/TTException.h"
+#include "TopTagger/TopTagger/include/lester_mt2_bisect.h"
 
 void SimpleAnalyzer::InitHistos()
 {
@@ -29,7 +30,7 @@ void SimpleAnalyzer::InitHistos()
 
 }
 
-void SimpleAnalyzer::Loop(double weight, int maxevents, bool isFastSim)
+void SimpleAnalyzer::Loop(double weight, int maxevents, bool isQuiet, bool isFastSim)
 {
 //    This is the loop skeleton where:
 //    jentry is the global entry number in the chain
@@ -37,6 +38,8 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isFastSim)
 //    Note that the argument to GetEntry must be:
 //    jentry for TChain::GetEntry
 //    ientry for TTree::GetEntry and TBranch::GetEntry
+
+   if(isQuiet) asymm_mt2_lester_bisect::disableCopyrightMessage();
 
    if (fChain == 0) return;
 
@@ -55,8 +58,15 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isFastSim)
       if (maxevents!=-1 && jentry>=maxevents) break;
       nb = fChain->GetEntry(jentry);   
       nbytes += nb;
-      if (jentry%5000 == 0)
-          std::cout << "At event " << jentry << std::endl;
+      if (!isQuiet && jentry%5000 == 0) std::cout << "At event " << jentry << std::endl;
+
+      // ----------------------------
+      // --- Apply some selection ---
+      // ----------------------------
+
+      if(!(passNoiseEventFilter && (isFastSim || passSearchTrigger) && passnJets && passdPhis 
+           && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets))
+          continue;
 
       // ------------------
       // --- TOP TAGGER ---
@@ -93,14 +103,6 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isFastSim)
       //get reconstructed tops
       const std::vector<TopObject*>& tops = ttr.getTops();
       
-      // ----------------------------
-      // --- Apply some selection ---
-      // ----------------------------
-
-      if(!(passNoiseEventFilter && (isFastSim || passSearchTrigger) && passnJets && passdPhis 
-           && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets))
-          continue;
-
       int ntop = tops.size();
       // Make MET into a TLorentzVector
       TLorentzVector metLV;

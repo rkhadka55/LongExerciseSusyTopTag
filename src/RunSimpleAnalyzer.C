@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
         {"outputdir",   required_argument, 0, 'D'}, // where to put the output files
         {"outputfile",  required_argument, 0, 'F'}, // automatically formed from input if you provide a sample name instead of a filename or filelist
         {"weight",      required_argument, 0, 'W'}, // not needed when input is a sample name
+        {"quiet",       no_argument,       0, 'Q'}, // not needed when input is a sample name
     };
 
     std::string infile = "";
@@ -35,8 +36,9 @@ int main(int argc, char *argv[])
     std::string outfile = "mytest.root";
     std::string outdir = ".";
     double weight = 1.;
+    bool isQuiet = false;
 
-    while((opt = getopt_long(argc, argv, "D:N:I:F:", long_options, &option_index)) != -1)
+    while((opt = getopt_long(argc, argv, "D:N:I:F:Q", long_options, &option_index)) != -1)
     {
         switch(opt)
         {
@@ -58,6 +60,10 @@ int main(int argc, char *argv[])
 
         case 'W':
             weight = atof(optarg);
+            break;
+
+        case 'Q':
+            isQuiet = true;
             break;
         }
     }
@@ -116,14 +122,14 @@ int main(int argc, char *argv[])
         SimpleAnalyzer t = SimpleAnalyzer(ch);
         std::cout << "Starting loop" << std::endl;
         t.InitHistos();
-        t.Loop(weight, maxevents);
+        t.Loop(weight, maxevents, isQuiet);
         t.WriteHistos();
     }
     else
     {
-        std::cout << "Running over sampleset " << dataset << std::endl;
+        if(!isQuiet) std::cout << "Running over sampleset " << dataset << std::endl;
         std::vector<AnaSamples::FileSummary> fs = sc[dataset];
-        std::cout << "Found " << fs.size() << " file summaries" << std::endl;
+        if(!isQuiet) std::cout << "Found " << fs.size() << " file summaries" << std::endl;
         SimpleAnalyzer t = SimpleAnalyzer(ch);
         t.InitHistos();
         for (auto f : fs)
@@ -133,8 +139,8 @@ int main(int argc, char *argv[])
             f.addFilesToChain(new_ch);
             //std::cout << "Chain has " << new_ch->GetEntries() << " entries." << std::endl;
             weight = f.getWeight();
-            std::cout << "Starting loop for " << f.tag << std::endl;
-            t.Loop(weight, maxevents, f.isFastSim_);
+            if(!isQuiet) std::cout << "Starting loop for " << f.tag << std::endl;
+            t.Loop(weight, maxevents, isQuiet, f.isFastSim_);
         }
         t.WriteHistos();
     }

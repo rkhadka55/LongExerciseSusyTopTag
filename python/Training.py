@@ -29,7 +29,6 @@ def mainXGB(options):
   print "TRAINING XGB"
 
   # Create xgboost classifier
-  # Train random forest 
   xgData = xgb.DMatrix(trainData["data"], label=trainData["labels"][:,0], weight=trainData["weights"][:,0])
   param = {'max_depth':5, 'eta':0.03, 'nthread':4 , 'objective':'binary:logistic'}
   gbm = xgb.train(param, xgData, num_boost_round=500)

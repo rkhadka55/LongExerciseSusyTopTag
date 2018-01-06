@@ -20,7 +20,7 @@ public :
 
    SimpleAnalyzer(TTree* tree) : BaseTuple(tree) {}
 
-   virtual void     Loop(double weight, int maxevents = -1, bool isFastSim = false);
+   virtual void     Loop(double weight, int maxevents = -1, bool isQuiet = false, bool isFastSim = false);
    virtual void     InitHistos();
    virtual void     WriteHistos();
 

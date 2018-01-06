@@ -19,7 +19,7 @@ public :
 
    LostLeptonBackground(TTree* tree) : BaseTuple(tree) {}
 
-   virtual void     Loop(double weight, int maxevents);
+   virtual void     Loop(double weight, int maxevents, int systematics);
    virtual void     InitHistos();
    virtual void     WriteHistos();
 

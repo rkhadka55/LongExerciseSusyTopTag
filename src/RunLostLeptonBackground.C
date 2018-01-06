@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
         {"outputdir",   required_argument, 0, 'D'}, // where to put the output files
         {"outputfile",  required_argument, 0, 'F'}, // automatically formed from input if you provide a sample name instead of a filename or filelist
         {"weight",      required_argument, 0, 'W'}, // not needed when input is a sample name
+        {"systematics", required_argument, 0, 'S'},
     };
 
     std::string infile = "";
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
     std::string outfile = "mytest.root";
     std::string outdir = ".";
     double weight = 1.;
+    int systematics =0;
 
     while((opt = getopt_long(argc, argv, "D:N:I:F:", long_options, &option_index)) != -1)
     {
@@ -59,6 +61,10 @@ int main(int argc, char *argv[])
         case 'W':
             weight = atof(optarg);
             break;
+
+       case 'S':
+           systematics = int(atoi(optarg));
+           break;
         }
     }
 
@@ -116,7 +122,7 @@ int main(int argc, char *argv[])
         LostLeptonBackground t = LostLeptonBackground(ch);
         std::cout << "Starting loop" << std::endl;
         t.InitHistos();
-        t.Loop(weight, maxevents);
+        t.Loop(weight, maxevents, systematics);
         t.WriteHistos();
     }
     else
@@ -134,7 +140,7 @@ int main(int argc, char *argv[])
             //std::cout << "Chain has " << new_ch->GetEntries() << " entries." << std::endl;
             weight = f.getWeight();
             std::cout << "Starting loop for " << f.tag << std::endl;
-            t.Loop(weight, maxevents);
+            t.Loop(weight, maxevents, systematics);
         }
         t.WriteHistos();
     }

@@ -164,8 +164,3 @@ if __name__ == '__main__':
 	options, args = parser.parse_args() 
 
 	main(options)
-
-#calc:
-#avg weight: (sum of weights^2)/(sum of weights) 
-#counts: event count / avg weight
-#statistical unc: sqrt(event count / avg weight)

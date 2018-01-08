@@ -1,3 +1,0 @@
-root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_ZJetsToNuNu_HT_800to1200_0_ZJetsToNuNu_HT_800to1200.root
-root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_ZJetsToNuNu_HT_800to1200_20_ZJetsToNuNu_HT_800to1200.root
-root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_ZJetsToNuNu_HT_800to1200_40_ZJetsToNuNu_HT_800to1200.root

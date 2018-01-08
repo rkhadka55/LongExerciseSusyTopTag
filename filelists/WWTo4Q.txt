@@ -1,1 +1,0 @@
-root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_WWTo4Q_0_WWTo4Q.root

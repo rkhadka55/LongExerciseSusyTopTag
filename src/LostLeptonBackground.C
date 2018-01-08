@@ -67,7 +67,6 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
       //}
       
       vector<TLorentzVector> jetsLVec;
-      
       if(systematics == -1){
         for(int ijet=0; ijet<jetsLVec_slimmed->size(); ++ijet)
         {
@@ -78,8 +77,7 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
       else if(systematics == 1){
         for(int ijet=0; ijet<jetsLVec_slimmed->size(); ++ijet)
         {
-         //jetsLVec->push_back((*jetsLVec_slimmed)[ijet]+(*jetsLVec_slimmed)[ijet](recoJetsJecUnc_slimmed));
-        jetsLVec.push_back((*jetsLVec_slimmed)[ijet]+(*jetsLVec_slimmed)[ijet]*((*recoJetsJecUnc_slimmed)[ijet]));
+             jetsLVec.push_back((*jetsLVec_slimmed)[ijet]+(*jetsLVec_slimmed)[ijet]*((*recoJetsJecUnc_slimmed)[ijet]));
         }
 	  }
        
@@ -90,10 +88,21 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
         }
        }
       
-      int nJet=0;
+      int nJet_30=0;
+      int nJet_50=0;
+      double HT_updated =0;
       for(int nJ=0; nJ<jetsLVec.size(); ++nJ){
-      ++nJet;
+       if(jetsLVec[nJ].Pt()>30 && jetsLVec[nJ].Eta()< 2.4){ 
+      ++nJet_30;
       }
+      //Jets greater than 50 are also < than 30
+       if(jetsLVec[nJ].Pt()>50 && jetsLVec[nJ].Eta()< 2.4){
+      ++nJet_50;
+      }
+      if(jetsLVec[nJ].Pt()>20 && jetsLVec[nJ].Eta()< 2.4){
+      HT_updated += jetsLVec[nJ].Pt();
+     }
+     }
       //std::cout<<"# of Jets "<<nJet<<std::endl; 
       // ------------------
       // --- TOP TAGGER ---
@@ -137,13 +146,11 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
       //if(!(passNoiseEventFilter && passSearchTrigger && passnJets && passdPhis 
        //    && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets))
         //  continue;
-
-      bool search_region  = passNoiseEventFilter && passSearchTrigger && passnJets && passdPhis
+      bool Systematics = nJet_50>2 && nJet_30>4;
+      bool search_region  = passNoiseEventFilter && passSearchTrigger && Systematics && passdPhis
            && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets;
-      bool control_region = passNoiseEventFilter && passSearchTrigger && passnJets && passdPhis
+      bool control_region = passNoiseEventFilter && passSearchTrigger && Systematics && passdPhis
                              && passIsoTrkVeto && passBJets;
-      bool Systematics = nJet;
-      
 
       int ntop = tops.size();
       // Make MET into a TLorentzVector
@@ -160,9 +167,9 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
       // different search bins
       bool SB1 = ntop>=2 && nb>=1 && mt2>=200 && met>=400;
       bool SB2 = ntop>=1 && nb>=2 && mt2>=600 && met>=400;
-      bool SB3 = ntop>=2 && nb>=3 && HT>=600 && met>=350;
-      bool SB4 = ntop>=2 && nb>=3 && HT>=300 && met>=500;
-      bool SB5 = ntop>=2 && nb>=3 && HT>=1300 && met>=500;
+      bool SB3 = ntop>=2 && nb>=3 && HT_updated>=600 && met>=350;
+      bool SB4 = ntop>=2 && nb>=3 && HT_updated>=300 && met>=500;
+      bool SB5 = ntop>=2 && nb>=3 && HT_updated>=1300 && met>=500;
 
       // -----------------------
       // --- FILL HISTOGRAMS ---
@@ -224,13 +231,6 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
           my_histos["cr_weight_sq"]->Fill(4., total_weight*total_weight);
       }
    }
-
-     const double data_mu = my_histos["sr_counts"]->GetBinContent(3);
-     const double data_mu_dn_bound = (data_mu ==0 )? 0. : (ROOT::Math::gamma_quantile((1 - 0.6827)/2, data_mu, 1.0));
-     const double data_mu_up_bound = ROOT::Math::gamma_quantile_c((1 - 0.6827)/2, data_mu+1, 1.0);
-     const double data_mu_dn_err = data_mu - data_mu_dn_bound;
-     const double data_mu_up_err = data_mu_up_bound - data_mu;
-     std::cout<<"Systematics "<< data_mu_dn_err <<", "<< data_mu_up_err << " Central value "<< data_mu << std::endl;
 
 
 }

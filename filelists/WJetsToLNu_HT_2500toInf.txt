@@ -1,0 +1,3 @@
+root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_WJetsToLNu_HT_2500toInf_0_WJetsToLNu_HT_2500toInf.root
+root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_WJetsToLNu_HT_2500toInf_20_WJetsToLNu_HT_2500toInf.root
+root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_WJetsToLNu_HT_2500toInf_40_WJetsToLNu_HT_2500toInf.root

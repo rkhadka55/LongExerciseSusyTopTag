@@ -1,2 +1,0 @@
-root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_TTZToLLNuNu_0_TTZToLLNuNu.root
-root://cmseos.fnal.gov//store/user/pastika/DAS2018Tuples/DAS2018NTuples_V3/susyTopTagging_TTZToLLNuNu_20_TTZToLLNuNu.root

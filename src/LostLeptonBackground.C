@@ -66,35 +66,35 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
       //std::cout<<"Try to Read out PT "<< (*cutMuVec)[0].Pt()<<std::endl;
       //}
       
-      vector<TLorentzVector> *jetsLVec;
+      vector<TLorentzVector> jetsLVec;
       
       if(systematics == -1){
         for(int ijet=0; ijet<jetsLVec_slimmed->size(); ++ijet)
         {
-	      jetsLVec->push_back((*jetsLVec_slimmed)[ijet]-(*jetsLVec_slimmed)[ijet]*((*recoJetsJecUnc_slimmed)[ijet]));
+	      jetsLVec.push_back((*jetsLVec_slimmed)[ijet]-(*jetsLVec_slimmed)[ijet]*((*recoJetsJecUnc_slimmed)[ijet]));
         }      
        }
       
-      if(systematics == 1){
+      else if(systematics == 1){
         for(int ijet=0; ijet<jetsLVec_slimmed->size(); ++ijet)
         {
          //jetsLVec->push_back((*jetsLVec_slimmed)[ijet]+(*jetsLVec_slimmed)[ijet](recoJetsJecUnc_slimmed));
-        jetsLVec->push_back((*jetsLVec_slimmed)[ijet]+(*jetsLVec_slimmed)[ijet]*((*recoJetsJecUnc_slimmed)[ijet]));
+        jetsLVec.push_back((*jetsLVec_slimmed)[ijet]+(*jetsLVec_slimmed)[ijet]*((*recoJetsJecUnc_slimmed)[ijet]));
         }
 	  }
        
        else{
         for(int ijet=0; ijet<jetsLVec_slimmed->size(); ++ijet)
         {
-              jetsLVec->push_back((*jetsLVec_slimmed)[ijet]);
+              jetsLVec.push_back((*jetsLVec_slimmed)[ijet]);
         }
        }
       
       int nJet=0;
-      for(int nJ=0; nJ<jetsLVec->size(); ++nJ){
+      for(int nJ=0; nJ<jetsLVec.size(); ++nJ){
       ++nJet;
       }
-      std::cout<<"# of Jets "<<nJet<<std::endl; 
+      //std::cout<<"# of Jets "<<nJet<<std::endl; 
       // ------------------
       // --- TOP TAGGER ---
       // ------------------
@@ -102,7 +102,7 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
       // Use helper function to create input list 
       // Create AK4 inputs object
       ttUtility::ConstAK4Inputs AK4Inputs = ttUtility::ConstAK4Inputs(
-          *jetsLVec_slimmed, 
+          jetsLVec,//*jetsLVec_slimmed, 
           *recoJetsBtag_slimmed,
           *qgLikelihood_slimmed
           );
@@ -142,7 +142,7 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
            && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets;
       bool control_region = passNoiseEventFilter && passSearchTrigger && passnJets && passdPhis
                              && passIsoTrkVeto && passBJets;
-
+      bool Systematics = nJet;
       
 
       int ntop = tops.size();

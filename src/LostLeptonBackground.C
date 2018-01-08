@@ -25,8 +25,11 @@ void LostLeptonBackground::InitHistos()
     my_histos.emplace("met_SB1", new TH1D("met_SB1", "met_SB1", 100, 0, 1000));
 
     // histograms for the background estimation
-    my_histos.emplace("counts", new TH1D("counts", "counts", 6, 0, 6)); // 1 bin per search bin
-    my_histos.emplace("weight_sq", new TH1D("weight_sq", "weight_sq", 6, 0, 6)); // 1 bin per search bin
+    my_histos.emplace("sr_counts", new TH1D("sr_counts", "counts", 6, 0, 6)); // 1 bin per search bin
+    my_histos.emplace("sr_weight_sq", new TH1D("sr_weight_sq", "sr_weight_sq", 6, 0, 6)); // 1 bin per search bin
+
+    my_histos.emplace("cr_counts", new TH1D("cr_counts", "counts", 6, 0, 6)); // 1 bin per search bin
+    my_histos.emplace("cr_weight_sq", new TH1D("cr_weight_sq", "cr_weight_sq", 6, 0, 6)); // 1 bin per search bin
 
 }
 
@@ -62,11 +65,16 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
       //if(cutMuVec->size()>0){
       //std::cout<<"Try to Read out PT "<< (*cutMuVec)[0].Pt()<<std::endl;
       //}
+      /*
+      vector<double>  *jetsLVec;
+      if(systematics == -1){
+	      jetsLVec->push_back(*recoJetsJecUnc_slimmed[0]);
+       }      
+       */ 
       // ------------------
       // --- TOP TAGGER ---
       // ------------------
-      
-          
+      //
       // Use helper function to create input list 
       // Create AK4 inputs object
       ttUtility::ConstAK4Inputs AK4Inputs = ttUtility::ConstAK4Inputs(
@@ -136,50 +144,62 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
       // weight is the sample weight, corresponding to xsec*lumi/nevents_total
       // eventWeight is the per-event weight, including genlevel weights, btagging weights etc
       double total_weight = weight*eventWeight;
-      my_histos["HT"]->Fill(HT, total_weight);
-      my_histos["Nt"]->Fill(tops.size(), total_weight);
 
       //my_histos["Mupt"]->Fill(cutMuVec->at(0).Pt(), total_weight);
 
-      my_histos["counts"]->Fill(0., total_weight);
-      my_histos["weight_sq"]->Fill(0., total_weight*total_weight);
       if(SB1 && search_region)
       {
-          my_histos["counts"]->Fill(1., total_weight);
-          my_histos["weight_sq"]->Fill(1., total_weight*total_weight);
-          my_histos["met_SB1"]->Fill(met, total_weight);
+          my_histos["sr_counts"]->Fill(0., total_weight);
+          my_histos["sr_weight_sq"]->Fill(0., total_weight*total_weight);
       }
        if(SB1 && control_region)
       {
-          my_histos["counts"]->Fill(2., total_weight);
-          my_histos["weight_sq"]->Fill(2., total_weight*total_weight);
-          my_histos["met_SB1"]->Fill(met, total_weight);
+          my_histos["cr_counts"]->Fill(0., total_weight);
+          my_histos["cr_weight_sq"]->Fill(0., total_weight*total_weight);
       }
-      /*
-      else if(SB2)
+      if(SB2 && search_region)
       {
-          my_histos["counts"]->Fill(2, total_weight);
-          my_histos["weight_sq"]->Fill(2, total_weight*total_weight);
+          my_histos["sr_counts"]->Fill(1., total_weight);
+          my_histos["sr_weight_sq"]->Fill(1., total_weight*total_weight);
       }
-      else if(SB3)
+       if(SB2 && control_region)
       {
-          my_histos["counts"]->Fill(3, total_weight);
-          my_histos["weight_sq"]->Fill(3, total_weight*total_weight);
+          my_histos["cr_counts"]->Fill(1., total_weight);
+          my_histos["cr_weight_sq"]->Fill(1., total_weight*total_weight);
       }
-      else if(SB4)
+      if(SB3 && search_region)
       {
-          my_histos["counts"]->Fill(4, total_weight);
-          my_histos["weight_sq"]->Fill(4, total_weight*total_weight);
+          my_histos["sr_counts"]->Fill(2., total_weight);
+          my_histos["sr_weight_sq"]->Fill(2., total_weight*total_weight);
       }
-      else if(SB5)
+       if(SB3 && control_region)
       {
-          my_histos["counts"]->Fill(5, total_weight);
-          my_histos["weight_sq"]->Fill(5, total_weight*total_weight);
+          my_histos["cr_counts"]->Fill(2., total_weight);
+          my_histos["cr_weight_sq"]->Fill(2., total_weight*total_weight);
       }
-     */
+      if(SB4 && search_region)
+      {
+          my_histos["sr_counts"]->Fill(3., total_weight);
+          my_histos["sr_weight_sq"]->Fill(3., total_weight*total_weight);
+      }
+       if(SB4 && control_region)
+      {
+          my_histos["cr_counts"]->Fill(3., total_weight);
+          my_histos["cr_weight_sq"]->Fill(3., total_weight*total_weight);
+      }
+      if(SB5 && search_region)
+      {
+          my_histos["sr_counts"]->Fill(4., total_weight);
+          my_histos["sr_weight_sq"]->Fill(4., total_weight*total_weight);
+      }
+       if(SB5 && control_region)
+      {
+          my_histos["cr_counts"]->Fill(4., total_weight);
+          my_histos["cr_weight_sq"]->Fill(4., total_weight*total_weight);
+      }
    }
 
-     const double data_mu = my_histos["counts"]->GetBinContent(3);
+     const double data_mu = my_histos["sr_counts"]->GetBinContent(3);
      const double data_mu_dn_bound = (data_mu ==0 )? 0. : (ROOT::Math::gamma_quantile((1 - 0.6827)/2, data_mu, 1.0));
      const double data_mu_up_bound = ROOT::Math::gamma_quantile_c((1 - 0.6827)/2, data_mu+1, 1.0);
      const double data_mu_dn_err = data_mu - data_mu_dn_bound;

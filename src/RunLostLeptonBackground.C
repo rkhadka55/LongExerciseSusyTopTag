@@ -8,6 +8,7 @@
 #include<iostream>
 #include<fstream>
 #include<getopt.h>
+#include <dirent.h>
 
 bool endsWith (std::string const &fullString, std::string const &extension) {
     if (fullString.size() >= extension.size()) {
@@ -89,10 +90,28 @@ int main(int argc, char *argv[])
         isTXT = true;
     std::string dataset = infile;
 
+    // Check if output directory exists, make it if not
+    DIR* dir = opendir(outdir.c_str());
+    if (dir)
+    {
+        //Directory exists.
+        closedir(dir);
+    }
+    else if (ENOENT == errno)
+    {
+        //Directory does not exist.
+        system(("mkdir -p " + outdir).c_str());
+    }
+    else
+    {
+        //opendir() failed for some other reason.
+    }
+
     if(!(isTXT || isROOT))
         outfile = dataset+".root";
     std::string fullpath = outdir + "/" + outfile;
     TFile* myfile = TFile::Open(fullpath.c_str(), "RECREATE");
+    myfile->cd();
 
     if(isROOT || isTXT)
     {

@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     double weight = 1.;
     int systematics =0;
 
-    while((opt = getopt_long(argc, argv, "D:N:I:F:", long_options, &option_index)) != -1)
+    while((opt = getopt_long(argc, argv, "D:N:I:F:S:", long_options, &option_index)) != -1)
     {
         switch(opt)
         {
@@ -91,6 +91,12 @@ int main(int argc, char *argv[])
 
     if(!(isTXT || isROOT))
         outfile = dataset+".root";
+        if(systematics == -1){
+        outfile = dataset+"_Sys_down.root";
+        }
+        if(systematics == 1){
+        outfile = dataset+"_Sys_up.root";
+        }
     std::string fullpath = outdir + "/" + outfile;
     TFile* myfile = TFile::Open(fullpath.c_str(), "RECREATE");
 

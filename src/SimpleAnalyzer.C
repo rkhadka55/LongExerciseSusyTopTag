@@ -113,20 +113,12 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isQuiet, bool isFas
       
       // Compute the number of b-tagged jets
       int nb = 0;
-      for(int ijet=0; ijet<recoJetsBtag_slimmed->size(); ++ijet)
-      {
-          // b-tagged jets must satisfy pt>30, |eta| < 2.4
-          if(jetsLVec_slimmed->at(ijet).Pt() < 30 || std::abs(jetsLVec_slimmed->at(ijet).Eta()) > 2.4) continue;
-          if(recoJetsBtag_slimmed->at(ijet) > 0.8484)
-              nb++;
-      }
 
       // different search bins
       bool SB1 = ntop>=2 && nb>=1 && mt2>=200 && met>=400;
       bool SB2 = ntop>=1 && nb>=2 && mt2>=600 && met>=400;
       bool SB3 = ntop>=2 && nb>=3 && HT>=600 && met>=350;
       bool SB4 = ntop>=2 && nb>=3 && HT>=300 && met>=500;
-      bool SB5 = ntop>=2 && nb>=3 && HT>=1300 && met>=500;
 
       //implement baseline top & MT2 requirement now that they are calculated
       if(!(ntop >= 1 && mt2 > 200)) continue;
@@ -162,11 +154,6 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isQuiet, bool isFas
       {
           my_histos["yield"]->Fill(4, total_weight);
           my_histos["weight_sq"]->Fill(4, total_weight*total_weight);
-      }
-      if(SB5)
-      {
-          my_histos["yield"]->Fill(5, total_weight);
-          my_histos["weight_sq"]->Fill(5, total_weight*total_weight);
       }
    }
 

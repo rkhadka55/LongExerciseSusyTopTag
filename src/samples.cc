@@ -157,7 +157,7 @@ namespace AnaSamples
         // - signal -
         // ----------
         
-        // T2tt Number cross lumi number of events k 
+        // T2tt Number cross lumi number of events 
         addSample("SMS-T2tt_fastsim_mStop-800",  "data/filelists/SMS-T2tt_fastsim_mStop-800.txt",  "slimmedTuple", 0.0283338, lumi, 18533.0, 1.0, kRed, true);
         addSample("SMS-T2tt_fastsim_mStop-900",  "data/filelists/SMS-T2tt_fastsim_mStop-900.txt",  "slimmedTuple", 0.0128895 , lumi, 19667.0, 1.0, kRed, true);
         addSample("SMS-T2tt_fastsim_mStop-1000", "data/filelists/SMS-T2tt_fastsim_mStop-1000.txt", "slimmedTuple", 0.00615134, lumi, 19536.0, 1.0, kRed, true);
@@ -198,7 +198,8 @@ namespace AnaSamples
                     "TTZToLLNuNu", "TTZToQQ",
                     /*"TTGJets",*/ "TTTT",
                     "WWW", "WWZ", "WZZ", "ZZZ", "WWG", "WZG", 
-                    "ttHTobb", "ttHToNonbb"
+                    "ttHTobb", "ttHToNonbb",
+                    "WWTo4Q", "ZZTo2Q2Nu", "ZZTo4Q"
                     });
 
         addSampleSet(samples, "TTZ", {"TTZToLLNuNu"});//, "TTZToQQ"});
@@ -207,14 +208,12 @@ namespace AnaSamples
 
         addSampleSet(samples, "Data_MET", {"Data_MET_2016"});
 
-        addSampleSet(samples, "Signal_fastsim_T2tt", {"SMS-T2tt_fastsim_mStop-800", "SMS-T2tt_fastsim_mStop-900", "SMS-T2tt_fastsim_mStop-1000", "SMS-T2tt_fastsim_mStop-1100", "SMS-T2tt_fastsim_mStop-1200"});
         addSampleSet(samples, "Signal_fastsim_T2tt_mStop-800", {"SMS-T2tt_fastsim_mStop-800"});
         addSampleSet(samples, "Signal_fastsim_T2tt_mStop-900", {"SMS-T2tt_fastsim_mStop-900"});
         addSampleSet(samples, "Signal_fastsim_T2tt_mStop-1000", {"SMS-T2tt_fastsim_mStop-1000"});
         addSampleSet(samples, "Signal_fastsim_T2tt_mStop-1100", {"SMS-T2tt_fastsim_mStop-1100"});
         addSampleSet(samples, "Signal_fastsim_T2tt_mStop-1200", {"SMS-T2tt_fastsim_mStop-1200"});
 
-        addSampleSet(samples, "Signal_fastsim_T1tttt", {"SMS-T1tttt_fastsim_mGluino-1700", "SMS-T1tttt_fastsim_mGluino-1800", "SMS-T1tttt_fastsim_mGluino-1900", "SMS-T1tttt_fastsim_mGluino-2000", "SMS-T1tttt_fastsim_mGluino-2100"});
         addSampleSet(samples, "Signal_fastsim_T1tttt_mGluino-1700", {"SMS-T1tttt_fastsim_mGluino-1700"});
         addSampleSet(samples, "Signal_fastsim_T1tttt_mGluino-1800", {"SMS-T1tttt_fastsim_mGluino-1800"});
         addSampleSet(samples, "Signal_fastsim_T1tttt_mGluino-1900", {"SMS-T1tttt_fastsim_mGluino-1900"});

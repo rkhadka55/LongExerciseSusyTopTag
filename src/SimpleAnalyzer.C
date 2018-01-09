@@ -25,7 +25,7 @@ void SimpleAnalyzer::InitHistos()
     my_histos.emplace("met_SB1", new TH1D("met_SB1", "met_SB1", 100, 0, 1000));
 
     // histograms for the background estimation
-    my_histos.emplace("counts", new TH1D("counts", "counts", 6, 0, 6)); // 1 bin per search bin
+    my_histos.emplace("yield", new TH1D("yield", "yield", 6, 0, 6)); // 1 bin per search bin
     my_histos.emplace("weight_sq", new TH1D("weight_sq", "weight_sq", 6, 0, 6)); // 1 bin per search bin
 
 }
@@ -90,7 +90,7 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isQuiet, bool isFas
           *puppiSubJetsLVec_slimmed 
           );
       
-      // Create jets constituents list combining AK4 and AK8 jets, these are used to construct top candiates
+      // Create jets constituents list combining AK4 and AK8 jets, these are used to construct top candidates
       // The vector of input constituents can also be constructed "by hand"
       std::vector<Constituent> constituents = ttUtility::packageConstituents(AK4Inputs, AK8Inputs);
 
@@ -107,10 +107,15 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isQuiet, bool isFas
       // Make MET into a TLorentzVector
       TLorentzVector metLV;
       metLV.SetPtEtaPhiM(met, 0, metphi, 0);
+      // Compute the MT2 variable
       double mt2 = ttUtility::calculateMT2(ttr, metLV);
+      
+      // Compute the number of b-tagged jets
       int nb = 0;
       for(int ijet=0; ijet<recoJetsBtag_slimmed->size(); ++ijet)
       {
+          // b-tagged jets must satisfy pt>30, |eta| < 2.4
+          if(jetsLVec_slimmed->at(ijet).Pt() < 30 || std::abs(jetsLVec_slimmed->at(ijet).Eta()) > 2.4) continue;
           if(recoJetsBtag_slimmed->at(ijet) > 0.8484)
               nb++;
       }
@@ -134,32 +139,32 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isQuiet, bool isFas
       my_histos["HT"]->Fill(HT, total_weight);
       my_histos["Nt"]->Fill(tops.size(), total_weight);
 
-      my_histos["counts"]->Fill(0., total_weight);
+      my_histos["yield"]->Fill(0., total_weight);
       my_histos["weight_sq"]->Fill(0., total_weight*total_weight);
       if(SB1)
       {
-          my_histos["counts"]->Fill(1., total_weight);
+          my_histos["yield"]->Fill(1., total_weight);
           my_histos["weight_sq"]->Fill(1., total_weight*total_weight);
           my_histos["met_SB1"]->Fill(met, total_weight);
       } 
       if(SB2)
       {
-          my_histos["counts"]->Fill(2, total_weight);
+          my_histos["yield"]->Fill(2, total_weight);
           my_histos["weight_sq"]->Fill(2, total_weight*total_weight);
       }
       if(SB3)
       {
-          my_histos["counts"]->Fill(3, total_weight);
+          my_histos["yield"]->Fill(3, total_weight);
           my_histos["weight_sq"]->Fill(3, total_weight*total_weight);
       }
       if(SB4)
       {
-          my_histos["counts"]->Fill(4, total_weight);
+          my_histos["yield"]->Fill(4, total_weight);
           my_histos["weight_sq"]->Fill(4, total_weight*total_weight);
       }
       if(SB5)
       {
-          my_histos["counts"]->Fill(5, total_weight);
+          my_histos["yield"]->Fill(5, total_weight);
           my_histos["weight_sq"]->Fill(5, total_weight*total_weight);
       }
    }

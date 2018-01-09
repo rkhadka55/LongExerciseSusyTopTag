@@ -19,16 +19,11 @@
 
 void LostLeptonBackground::InitHistos()
 {
-    // Declare all your histograms here, that way we can fill them for multiple chains
-    my_histos.emplace("HT",new TH1D("HT","HT",60,0,3000));
-    my_histos.emplace("Nt",new TH1D("Nt","Nt",5,0,5));
-    my_histos.emplace("met_SB1", new TH1D("met_SB1", "met_SB1", 100, 0, 1000));
-
     // histograms for the background estimation
-    my_histos.emplace("sr_counts", new TH1D("sr_counts", "counts", 6, 0, 6)); // 1 bin per search bin
+    my_histos.emplace("sr_yield", new TH1D("sr_yield", "yield", 6, 0, 6)); // 1 bin per search bin
     my_histos.emplace("sr_weight_sq", new TH1D("sr_weight_sq", "sr_weight_sq", 6, 0, 6)); // 1 bin per search bin
 
-    my_histos.emplace("cr_counts", new TH1D("cr_counts", "counts", 6, 0, 6)); // 1 bin per search bin
+    my_histos.emplace("cr_yield", new TH1D("cr_yield", "yield", 6, 0, 6)); // 1 bin per search bin
     my_histos.emplace("cr_weight_sq", new TH1D("cr_weight_sq", "cr_weight_sq", 6, 0, 6)); // 1 bin per search bin
 
 }
@@ -162,6 +157,8 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
         int nb = 0;
         for(int ijet=0; ijet<recoJetsBtag_slimmed->size(); ++ijet)
         {
+            // b-tagged jets must satisfy pt>30, |eta| < 2.4
+            if(jetsLVec[ijet].Pt() < 30 || std::abs(jetsLVec[ijet].Eta()) > 2.4) continue;
             if(recoJetsBtag_slimmed->at(ijet) > 0.8484)
                 nb++;
         }
@@ -187,62 +184,62 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
 
         if(search_region)
         {
-            my_histos["sr_counts"]->Fill(0., total_weight);
+            my_histos["sr_yield"]->Fill(0., total_weight);
             my_histos["sr_weight_sq"]->Fill(0., total_weight*total_weight);
         }
         if(control_region)
         {
-            my_histos["cr_counts"]->Fill(0., total_weight);
+            my_histos["cr_yield"]->Fill(0., total_weight);
             my_histos["cr_weight_sq"]->Fill(0., total_weight*total_weight);
         }
         if(SB1 && search_region)
         {
-            my_histos["sr_counts"]->Fill(1., total_weight);
+            my_histos["sr_yield"]->Fill(1., total_weight);
             my_histos["sr_weight_sq"]->Fill(1., total_weight*total_weight);
         }
         if(SB1 && control_region)
         {
-            my_histos["cr_counts"]->Fill(1., total_weight);
+            my_histos["cr_yield"]->Fill(1., total_weight);
             my_histos["cr_weight_sq"]->Fill(1., total_weight*total_weight);
         }
         if(SB2 && search_region)
         {
-            my_histos["sr_counts"]->Fill(2., total_weight);
+            my_histos["sr_yield"]->Fill(2., total_weight);
             my_histos["sr_weight_sq"]->Fill(2., total_weight*total_weight);
         }
         if(SB2 && control_region)
         {
-            my_histos["cr_counts"]->Fill(2., total_weight);
+            my_histos["cr_yield"]->Fill(2., total_weight);
             my_histos["cr_weight_sq"]->Fill(2., total_weight*total_weight);
         }
         if(SB3 && search_region)
         {
-            my_histos["sr_counts"]->Fill(3., total_weight);
+            my_histos["sr_yield"]->Fill(3., total_weight);
             my_histos["sr_weight_sq"]->Fill(3., total_weight*total_weight);
         }
         if(SB3 && control_region)
         {
-            my_histos["cr_counts"]->Fill(3., total_weight);
+            my_histos["cr_yield"]->Fill(3., total_weight);
             my_histos["cr_weight_sq"]->Fill(3., total_weight*total_weight);
         }
         if(SB4 && search_region)
         {
-            my_histos["sr_counts"]->Fill(4., total_weight);
+            my_histos["sr_yield"]->Fill(4., total_weight);
             my_histos["sr_weight_sq"]->Fill(4., total_weight*total_weight);
         }
         if(SB4 && control_region)
         {
-            my_histos["cr_counts"]->Fill(4., total_weight);
+            my_histos["cr_yield"]->Fill(4., total_weight);
             my_histos["cr_weight_sq"]->Fill(4., total_weight*total_weight);
         }
         if(SB5 && search_region)
         {
-            my_histos["sr_counts"]->Fill(5., total_weight);
+            my_histos["sr_yield"]->Fill(5., total_weight);
             my_histos["sr_weight_sq"]->Fill(5., total_weight*total_weight);
         }
         if(SB5 && control_region)
         {
-            my_histos["cr_counts"]->Fill(5., total_weight);
+            my_histos["cr_yield"]->Fill(5., total_weight);
             my_histos["cr_weight_sq"]->Fill(5., total_weight*total_weight);
         }
     }

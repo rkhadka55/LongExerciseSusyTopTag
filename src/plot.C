@@ -302,18 +302,16 @@ int main()
 
     //vector summarizing background histograms to include in the plot
     std::vector<histInfo> bgEntries = {
-        {"t#bar{t}",           "myhistos/TTbarNoHad.root",   "hist", kRed},
-        {"W+Jets",             "myhistos/WJetsToLNu.root",   "hist", kBlue},
-        {"Single top",         "myhistos/ST.root",           "hist", kOrange},
+        {"t#bar{t}/W",         "myhistos/ttbarW.root",       "hist", kRed},
         {"Z#rightarrow#nu#nu", "myhistos/ZJetsToNuNu.root",  "hist", kYellow + 2},
         {"QCD",                "myhistos/QCD.root",          "hist", kMagenta},
-        {"Diboson",            "myhistos/Diboson.root",      "hist", kGreen + 2},
+        {"t#bar{t}Z",          "myhistos/TTZ.root",          "hist", kBlue},
         {"Rare",               "myhistos/Rare.root",         "hist", kGray},
     };
 
     //vector summarizing signal histograms to include in the plot
     std::vector<histInfo> sigEntries = {
-        {"Signal QCD", "myhistos/QCD.root", "hist", kGreen + 2},
+        {"T2tt (1000, 1)", "myhistos/Signal_fastsim_T2tt_mStop-1000.root", "hist", kGreen + 2},
     };
 
     //make plotter object with the required sources for histograms specified
@@ -321,4 +319,5 @@ int main()
 
     plt.plot("HT", "H_{T} [GeV]", "Events", true, -1, -1, 5);
     plt.plot("Nt", "N_{T}");
+    plt.plot("counts", "bins", "Events", true);
 }

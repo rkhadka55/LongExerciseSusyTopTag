@@ -23,13 +23,21 @@ void llSystematics ()
     TH1 *hFluctDn_sr = static_cast<TH1*>(fJECDn->Get("sr_counts"));
     TH1 *hFluctNom_sr = static_cast<TH1*>(fJECNom->Get("sr_counts"));
 
-    for(int iBin = 1; iBin <= 5; ++iBin)
+    //calculate the central prediction
+    TH1 *tFactors = (TH1*)hFluctNom_sr->Clone("tFactors");
+    tFactors->Divide(hFluctNom_cr);
+    TH1 *centralPred = (TH1*)cr_counts->Clone("counts");
+    centralPred->Multiply(tFactors);
+
+    for(int iBin = 1; iBin <= 6; ++iBin)
     {
         std::cout << "iBin: " << iBin << std::endl;
 
         //extrating the counts
         const double data_mu = cr_counts->GetBinContent(iBin);
-        std::cout<<"cr counts "<<data_mu<<std::endl;
+        std::cout<<"cr counts: "<<data_mu<<std::endl;
+        std::cout<<"tFactor: " << tFactors->GetBinContent(iBin)<<std::endl;
+        std::cout<<"central prediction "<<centralPred->GetBinContent(iBin)<<std::endl;
     
         double err_low = cr_counts->GetBinErrorLow(iBin);
         double err_up = cr_counts->GetBinErrorUp(iBin);
@@ -63,6 +71,12 @@ void llSystematics ()
 
         std::cout << "Tfactor relative errors: +" << tFactorRelErrUp << "/-" << tFactorRelErrDn << std::endl;
     }
+
+    TFile *fout = TFile::Open("ttbarW_central.root", "RECREATE");
+    fout->cd();
+    centralPred->Write();
+    tFactors->Write();
+    fout->Close();
 
     fJECDn->Close();
     fJECUp->Close();

@@ -186,7 +186,7 @@ namespace AnaSamples
 
         //addSampleSet(samples, "DYJetsToLL", {"DYJetsToLL_HT_2500toInf", "DYJetsToLL_HT_1200to2500", "DYJetsToLL_HT_800to1200", "DYJetsToLL_HT_600to800", "DYJetsToLL_HT_400to600", "DYJetsToLL_HT_200to400", "DYJetsToLL_HT_100to200", "DYJetsToLL_HT_70to100"});
 
-        addSampleSet(samples, "QCD", {"QCD_HT2000toInf", "QCD_HT1500to2000", "QCD_HT1000to1500", "QCD_HT700to1000", "QCD_HT500to700", "QCD_HT300to500", "QCD_HT200to300", "QCD_HT100to200"});
+        addSampleSet(samples, "QCD", {"QCD_HT2000toInf", "QCD_HT1500to2000", "QCD_HT1000to1500", "QCD_HT700to1000", "QCD_HT500to700", "QCD_HT300to500", "QCD_HT200to300"});
 
         addSampleSet(samples, "ST", {"tW_top_NoHad", "tW_antitop_NoHad", "ST_s", "ST_t_top", "ST_t_antitop", "tZq_ll", "ST_tWll", "ST_tWnunu"});
 
@@ -196,11 +196,12 @@ namespace AnaSamples
 
         addSampleSet(samples, "Rare", {"TTWJetsToLNu", "TTWJetsToQQ", 
                     "TTZToLLNuNu", "TTZToQQ",
-                    "TTGJets", "TTTT",
+                    /*"TTGJets",*/ "TTTT",
                     "WWW", "WWZ", "WZZ", "ZZZ", "WWG", "WZG", 
-                    "ttHTobb", "ttHToNonbb"});
+                    "ttHTobb", "ttHToNonbb"
+                    });
 
-        addSampleSet(samples, "TTZ", {"TTZToLLNuNu", "TTZToQQ"});
+        addSampleSet(samples, "TTZ", {"TTZToLLNuNu"});//, "TTZToQQ"});
 
         addSampleSet(samples, "ALL_MC", {});
 

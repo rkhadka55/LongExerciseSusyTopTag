@@ -65,7 +65,7 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isQuiet, bool isFas
       // ----------------------------
 
       if(!(passNoiseEventFilter && (isFastSim || passSearchTrigger) && passnJets && passdPhis 
-           && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets))
+           && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets && HT > 300))
           continue;
 
       // ------------------
@@ -121,6 +121,9 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isQuiet, bool isFas
       bool SB3 = ntop>=2 && nb>=3 && HT>=600 && met>=350;
       bool SB4 = ntop>=2 && nb>=3 && HT>=300 && met>=500;
       bool SB5 = ntop>=2 && nb>=3 && HT>=1300 && met>=500;
+
+      //implement baseline top & MT2 requirement now that they are calculated
+      if(!(ntop >= 1 && mt2 > 200)) continue;
 
       // -----------------------
       // --- FILL HISTOGRAMS ---

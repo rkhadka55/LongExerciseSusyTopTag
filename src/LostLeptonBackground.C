@@ -42,203 +42,218 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
 //    jentry for TChain::GetEntry
 //    ientry for TTree::GetEntry and TBranch::GetEntry
 
-   if (fChain == 0) return;
+    if (fChain == 0) return;
 
-   Long64_t nentries = fChain->GetEntriesFast();
-   Long64_t nbytes = 0, nb = 0;
+    Long64_t nentries = fChain->GetEntriesFast();
+    Long64_t nbytes = 0, nb = 0;
 
-   // Create top tagger object
-   TopTagger tt;
-   tt.setCfgFile("TopTagger.cfg");
+    // Create top tagger object
+    TopTagger tt;
+    tt.setCfgFile("TopTagger.cfg");
 
-   // event loop
-   for (Long64_t jentry=0; jentry<nentries; jentry++) 
-   {
-      Long64_t ientry = LoadTree(jentry);
-      if (ientry < 0) break;
-      if (maxevents!=-1 && jentry>=maxevents) break;
-      nb = fChain->GetEntry(jentry);   
-      nbytes += nb;
-      if (jentry%5000 == 0)
-          std::cout << "At event " << jentry << std::endl;
-      //std::cout<<"Trying to Read out Size"<<cutMuVec->size()<<std::endl;
-      //if(cutMuVec->size()>0){
-      //std::cout<<"Try to Read out PT "<< (*cutMuVec)[0].Pt()<<std::endl;
-      //}
+    // event loop
+    for (Long64_t jentry=0; jentry<nentries; jentry++) 
+    {
+        Long64_t ientry = LoadTree(jentry);
+        if (ientry < 0) break;
+        if (maxevents!=-1 && jentry>=maxevents) break;
+        nb = fChain->GetEntry(jentry);   
+        nbytes += nb;
+        if (jentry%5000 == 0)
+            std::cout << "At event " << jentry << std::endl;
       
-      vector<TLorentzVector> jetsLVec;
-      if(systematics == -1){
-        for(int ijet=0; ijet<jetsLVec_slimmed->size(); ++ijet)
+        vector<TLorentzVector> jetsLVec;
+        if(systematics == -1)
         {
-	      jetsLVec.push_back((*jetsLVec_slimmed)[ijet]-(*jetsLVec_slimmed)[ijet]*((*recoJetsJecUnc_slimmed)[ijet]));
-        }      
-       }
-      
-      else if(systematics == 1){
-        for(int ijet=0; ijet<jetsLVec_slimmed->size(); ++ijet)
-        {
-             jetsLVec.push_back((*jetsLVec_slimmed)[ijet]+(*jetsLVec_slimmed)[ijet]*((*recoJetsJecUnc_slimmed)[ijet]));
+            for(int ijet=0; ijet<jetsLVec_slimmed->size(); ++ijet)
+            {
+                jetsLVec.push_back( (*jetsLVec_slimmed)[ijet] * (1 - (*recoJetsJecUnc_slimmed)[ijet]));
+            }      
         }
-	  }
-       
-       else{
-        for(int ijet=0; ijet<jetsLVec_slimmed->size(); ++ijet)
-        {
-              jetsLVec.push_back((*jetsLVec_slimmed)[ijet]);
-        }
-       }
       
-      int nJet_30=0;
-      int nJet_50=0;
-      double HT_updated =0;
-      for(int nJ=0; nJ<jetsLVec.size(); ++nJ){
-       if(jetsLVec[nJ].Pt()>30 && jetsLVec[nJ].Eta()< 2.4){ 
-      ++nJet_30;
-      }
-      //Jets greater than 50 are also < than 30
-       if(jetsLVec[nJ].Pt()>50 && jetsLVec[nJ].Eta()< 2.4){
-      ++nJet_50;
-      }
-      if(jetsLVec[nJ].Pt()>20 && jetsLVec[nJ].Eta()< 2.4){
-      HT_updated += jetsLVec[nJ].Pt();
-     }
-     }
-      //std::cout<<"# of Jets "<<nJet<<std::endl; 
-      // ------------------
-      // --- TOP TAGGER ---
-      // ------------------
-      //
-      // Use helper function to create input list 
-      // Create AK4 inputs object
-      ttUtility::ConstAK4Inputs AK4Inputs = ttUtility::ConstAK4Inputs(
-          jetsLVec,//*jetsLVec_slimmed, 
-          *recoJetsBtag_slimmed,
-          *qgLikelihood_slimmed
-          );
+        else if(systematics == 1)
+        {
+            for(int ijet=0; ijet<jetsLVec_slimmed->size(); ++ijet)
+            {
+                jetsLVec.push_back( (*jetsLVec_slimmed)[ijet] * (1 + (*recoJetsJecUnc_slimmed)[ijet]));
+            }
+        }
+        else
+        {
+            //deep copy, slight waste of time
+            jetsLVec = *jetsLVec_slimmed;
+        }
+      
+        int nJet_30=0;
+        int nJet_50=0;
+        double HT_updated = 0.0;
+        for(int nJ=0; nJ<jetsLVec.size(); ++nJ)
+        {
+            if(jetsLVec[nJ].Pt()>30 && jetsLVec[nJ].Eta()< 2.4)
+            { 
+                ++nJet_30;
+            }
+            //Jets greater than 50 are also > than 30
+            if(jetsLVec[nJ].Pt()>50 && jetsLVec[nJ].Eta()< 2.4)
+            {
+                ++nJet_50;
+            }
+            if(jetsLVec[nJ].Pt()>20 && jetsLVec[nJ].Eta()< 2.4)
+            {
+                HT_updated += jetsLVec[nJ].Pt();
+            }
+        }
+
+        // ----------------------------
+        // --- Apply some selection ---
+        // ----------------------------
+
+        bool passnJetRequirement = nJet_50>2 && nJet_30>4;
+        bool search_region  = passNoiseEventFilter && passSearchTrigger && passnJetRequirement && passdPhis
+            && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets && HT_updated > 300;
+        //The control region replaces the lepton veto with an explicit selection of exactly 1 electron xor muon
+        bool control_region = passNoiseEventFilter && passSearchTrigger && passnJetRequirement && passdPhis
+            && (cutMuVec->size() == 1 || cutElecVec->size() == 1) && passBJets && HT_updated > 300;
+
+        if(!(search_region || control_region)) continue;
+
+        // ------------------
+        // --- TOP TAGGER ---
+        // ------------------
+        //
+        // Use helper function to create input list 
+        // Create AK4 inputs object
+        ttUtility::ConstAK4Inputs AK4Inputs = ttUtility::ConstAK4Inputs(
+            jetsLVec,
+            *recoJetsBtag_slimmed,
+            *qgLikelihood_slimmed
+            );
     
-      // Create AK8 inputs object
-      ttUtility::ConstAK8Inputs AK8Inputs = ttUtility::ConstAK8Inputs(
-          *puppiJetsLVec_slimmed,
-          *puppitau1_slimmed,
-          *puppitau2_slimmed,
-          *puppitau3_slimmed,
-          *puppisoftDropMass_slimmed,
-          *puppiSubJetsLVec_slimmed 
-          );
+        // Create AK8 inputs object
+        ttUtility::ConstAK8Inputs AK8Inputs = ttUtility::ConstAK8Inputs(
+            *puppiJetsLVec_slimmed,
+            *puppitau1_slimmed,
+            *puppitau2_slimmed,
+            *puppitau3_slimmed,
+            *puppisoftDropMass_slimmed,
+            *puppiSubJetsLVec_slimmed 
+            );
       
-      // Create jets constituents list combining AK4 and AK8 jets, these are used to construct top candiates
-      // The vector of input constituents can also be constructed "by hand"
-      std::vector<Constituent> constituents = ttUtility::packageConstituents(AK4Inputs, AK8Inputs);
+        // Create jets constituents list combining AK4 and AK8 jets, these are used to construct top candiates
+        // The vector of input constituents can also be constructed "by hand"
+        std::vector<Constituent> constituents = ttUtility::packageConstituents(AK4Inputs, AK8Inputs);
 
-      // run the top tagger
-      tt.runTagger(constituents);
+        // run the top tagger
+        tt.runTagger(constituents);
 
-      // retrieve the top tagger results object
-      const TopTaggerResults& ttr = tt.getResults();
+        // retrieve the top tagger results object
+        const TopTaggerResults& ttr = tt.getResults();
       
-      //get reconstructed tops
-      const std::vector<TopObject*>& tops = ttr.getTops();
+        //get reconstructed tops
+        const std::vector<TopObject*>& tops = ttr.getTops();
       
-      // ----------------------------
-      // --- Apply some selection ---
-      // ----------------------------
+        int ntop = tops.size();
+        // Make MET into a TLorentzVector
+        TLorentzVector metLV;
+        metLV.SetPtEtaPhiM(met, 0, metphi, 0);
 
-      //if(!(passNoiseEventFilter && passSearchTrigger && passnJets && passdPhis 
-       //    && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets))
-        //  continue;
-      bool Systematics = nJet_50>2 && nJet_30>4;
-      bool search_region  = passNoiseEventFilter && passSearchTrigger && Systematics && passdPhis
-           && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets;
-      bool control_region = passNoiseEventFilter && passSearchTrigger && Systematics && passdPhis
-                             && passIsoTrkVeto && passBJets;
+        double mt2 = ttUtility::calculateMT2(ttr, metLV);
 
-      int ntop = tops.size();
-      // Make MET into a TLorentzVector
-      TLorentzVector metLV;
-      metLV.SetPtEtaPhiM(met, 0, metphi, 0);
-      double mt2 = ttUtility::calculateMT2(ttr, metLV);
-      int nb = 0;
-      for(int ijet=0; ijet<recoJetsBtag_slimmed->size(); ++ijet)
-      {
-          if(recoJetsBtag_slimmed->at(ijet) > 0.8484)
-              nb++;
-      }
-      //std::cout<<"Read out Size "<<cutMuVec->size()<<std::endl;
-      // different search bins
-      bool SB1 = ntop>=2 && nb>=1 && mt2>=200 && met>=400;
-      bool SB2 = ntop>=1 && nb>=2 && mt2>=600 && met>=400;
-      bool SB3 = ntop>=2 && nb>=3 && HT_updated>=600 && met>=350;
-      bool SB4 = ntop>=2 && nb>=3 && HT_updated>=300 && met>=500;
-      bool SB5 = ntop>=2 && nb>=3 && HT_updated>=1300 && met>=500;
+        int nb = 0;
+        for(int ijet=0; ijet<recoJetsBtag_slimmed->size(); ++ijet)
+        {
+            if(recoJetsBtag_slimmed->at(ijet) > 0.8484)
+                nb++;
+        }
 
-      // -----------------------
-      // --- FILL HISTOGRAMS ---
-      // -----------------------
-      // weight is the sample weight, corresponding to xsec*lumi/nevents_total
-      // eventWeight is the per-event weight, including genlevel weights, btagging weights etc
-      double total_weight = weight*eventWeight;
+        // different search bins
+        bool SB1 = ntop>=2 && nb>=1 && mt2>=200 && met>=400;
+        bool SB2 = ntop>=1 && nb>=2 && mt2>=600 && met>=400;
+        bool SB3 = ntop>=2 && nb>=3 && HT_updated>=600 && met>=350;
+        bool SB4 = ntop>=2 && nb>=3 && HT_updated>=300 && met>=500;
+        bool SB5 = ntop>=2 && nb>=3 && HT_updated>=1300 && met>=500;
 
-      //my_histos["Mupt"]->Fill(cutMuVec->at(0).Pt(), total_weight);
+        //Select MT2 and Nt cuts
+        if(!(ntop>=1 && mt2>=200)) continue;
+        
+        // -----------------------
+        // --- FILL HISTOGRAMS ---
+        // -----------------------
+        // weight is the sample weight, corresponding to xsec*lumi/nevents_total
+        // eventWeight is the per-event weight, including genlevel weights, btagging weights etc
+        double total_weight = weight*eventWeight;
 
-      if(SB1 && search_region)
-      {
-          my_histos["sr_counts"]->Fill(0., total_weight);
-          my_histos["sr_weight_sq"]->Fill(0., total_weight*total_weight);
-      }
-       if(SB1 && control_region)
-      {
-          my_histos["cr_counts"]->Fill(0., total_weight);
-          my_histos["cr_weight_sq"]->Fill(0., total_weight*total_weight);
-      }
-      if(SB2 && search_region)
-      {
-          my_histos["sr_counts"]->Fill(1., total_weight);
-          my_histos["sr_weight_sq"]->Fill(1., total_weight*total_weight);
-      }
-       if(SB2 && control_region)
-      {
-          my_histos["cr_counts"]->Fill(1., total_weight);
-          my_histos["cr_weight_sq"]->Fill(1., total_weight*total_weight);
-      }
-      if(SB3 && search_region)
-      {
-          my_histos["sr_counts"]->Fill(2., total_weight);
-          my_histos["sr_weight_sq"]->Fill(2., total_weight*total_weight);
-      }
-       if(SB3 && control_region)
-      {
-          my_histos["cr_counts"]->Fill(2., total_weight);
-          my_histos["cr_weight_sq"]->Fill(2., total_weight*total_weight);
-      }
-      if(SB4 && search_region)
-      {
-          my_histos["sr_counts"]->Fill(3., total_weight);
-          my_histos["sr_weight_sq"]->Fill(3., total_weight*total_weight);
-      }
-       if(SB4 && control_region)
-      {
-          my_histos["cr_counts"]->Fill(3., total_weight);
-          my_histos["cr_weight_sq"]->Fill(3., total_weight*total_weight);
-      }
-      if(SB5 && search_region)
-      {
-          my_histos["sr_counts"]->Fill(4., total_weight);
-          my_histos["sr_weight_sq"]->Fill(4., total_weight*total_weight);
-      }
-       if(SB5 && control_region)
-      {
-          my_histos["cr_counts"]->Fill(4., total_weight);
-          my_histos["cr_weight_sq"]->Fill(4., total_weight*total_weight);
-      }
-   }
+        //my_histos["Mupt"]->Fill(cutMuVec->at(0).Pt(), total_weight);
+
+        if(search_region)
+        {
+            my_histos["sr_counts"]->Fill(0., total_weight);
+            my_histos["sr_weight_sq"]->Fill(0., total_weight*total_weight);
+        }
+        if(control_region)
+        {
+            my_histos["cr_counts"]->Fill(0., total_weight);
+            my_histos["cr_weight_sq"]->Fill(0., total_weight*total_weight);
+        }
+        if(SB1 && search_region)
+        {
+            my_histos["sr_counts"]->Fill(1., total_weight);
+            my_histos["sr_weight_sq"]->Fill(1., total_weight*total_weight);
+        }
+        if(SB1 && control_region)
+        {
+            my_histos["cr_counts"]->Fill(1., total_weight);
+            my_histos["cr_weight_sq"]->Fill(1., total_weight*total_weight);
+        }
+        if(SB2 && search_region)
+        {
+            my_histos["sr_counts"]->Fill(2., total_weight);
+            my_histos["sr_weight_sq"]->Fill(2., total_weight*total_weight);
+        }
+        if(SB2 && control_region)
+        {
+            my_histos["cr_counts"]->Fill(2., total_weight);
+            my_histos["cr_weight_sq"]->Fill(2., total_weight*total_weight);
+        }
+        if(SB3 && search_region)
+        {
+            my_histos["sr_counts"]->Fill(3., total_weight);
+            my_histos["sr_weight_sq"]->Fill(3., total_weight*total_weight);
+        }
+        if(SB3 && control_region)
+        {
+            my_histos["cr_counts"]->Fill(3., total_weight);
+            my_histos["cr_weight_sq"]->Fill(3., total_weight*total_weight);
+        }
+        if(SB4 && search_region)
+        {
+            my_histos["sr_counts"]->Fill(4., total_weight);
+            my_histos["sr_weight_sq"]->Fill(4., total_weight*total_weight);
+        }
+        if(SB4 && control_region)
+        {
+            my_histos["cr_counts"]->Fill(4., total_weight);
+            my_histos["cr_weight_sq"]->Fill(4., total_weight*total_weight);
+        }
+        if(SB5 && search_region)
+        {
+            my_histos["sr_counts"]->Fill(5., total_weight);
+            my_histos["sr_weight_sq"]->Fill(5., total_weight*total_weight);
+        }
+        if(SB5 && control_region)
+        {
+            my_histos["cr_counts"]->Fill(5., total_weight);
+            my_histos["cr_weight_sq"]->Fill(5., total_weight*total_weight);
+        }
+    }
 
 
 }
 
 void LostLeptonBackground::WriteHistos()
 {
-   for (const auto &p : my_histos) {
-       p.second->Write();
-   }
+    for (const auto &p : my_histos) {
+        p.second->Write();
+    }
     
 }

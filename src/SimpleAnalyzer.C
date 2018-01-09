@@ -26,6 +26,7 @@ void SimpleAnalyzer::InitHistos()
 
     // histograms for the background estimation
     my_histos.emplace("yield", new TH1D("yield", "yield", 6, 0, 6)); // 1 bin per search bin
+    my_histos["yield"]->Sumw2();
     my_histos.emplace("weight_sq", new TH1D("weight_sq", "weight_sq", 6, 0, 6)); // 1 bin per search bin
 
 }

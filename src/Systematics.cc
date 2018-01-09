@@ -69,7 +69,8 @@ void llSystematics ()
         double tFactorRelErrUp = sqrt(pow(jecErrUp_cr/jecFluctNom_cr, 2) + pow(jecErrUp_sr/jecFluctNom_sr, 2));
         double tFactorRelErrDn = sqrt(pow(jecErrDn_cr/jecFluctNom_cr, 2) + pow(jecErrDn_sr/jecFluctNom_sr, 2));
 
-        std::cout << "Tfactor relative errors: +" << tFactorRelErrUp << "/-" << tFactorRelErrDn << std::endl;
+        std::cout << "Tfactor relative jeu errors: +" << tFactorRelErrUp << "/-" << tFactorRelErrDn << std::endl;
+        std::cout << "Tfactor relative stat errors: +/-" << tFactors->GetBinError(iBin)/tFactors->GetBinContent(iBin) << std::endl;
     }
 
     TFile *fout = TFile::Open("ttbarW_central.root", "RECREATE");

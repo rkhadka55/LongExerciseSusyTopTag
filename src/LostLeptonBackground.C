@@ -21,9 +21,11 @@ void LostLeptonBackground::InitHistos()
 {
     // histograms for the background estimation
     my_histos.emplace("sr_yield", new TH1D("sr_yield", "yield", 6, 0, 6)); // 1 bin per search bin
+    my_histos["sr_yield"]->Sumw2();
     my_histos.emplace("sr_weight_sq", new TH1D("sr_weight_sq", "sr_weight_sq", 6, 0, 6)); // 1 bin per search bin
 
     my_histos.emplace("cr_yield", new TH1D("cr_yield", "yield", 6, 0, 6)); // 1 bin per search bin
+    my_histos["cr_yield"]->Sumw2();
     my_histos.emplace("cr_weight_sq", new TH1D("cr_weight_sq", "cr_weight_sq", 6, 0, 6)); // 1 bin per search bin
 
 }

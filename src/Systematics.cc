@@ -7,26 +7,26 @@
 void llSystematics ()
 {
     TFile *_file0 = TFile::Open("myBackground/Data_MET.root");
-    TH1* cr_counts = (TH1*) _file0->Get("cr_counts");
+    TH1* cr_yield = (TH1*) _file0->Get("cr_yield");
     
     //extracting poisson errors https://twiki.cern.ch/twiki/bin/viewauth/CMS/PoissonErrorBars
-    cr_counts->SetBinErrorOption(TH1::kPoisson);
+    cr_yield->SetBinErrorOption(TH1::kPoisson);
 
     //extract JEC uncertainty 
     TFile *fJECDn = TFile::Open("myBackground/ttbarW_Sys_down.root");
     TFile *fJECUp = TFile::Open("myBackground/ttbarW_Sys_up.root");
     TFile *fJECNom = TFile::Open("myBackground/ttbarW.root");
-    TH1 *hFluctUp_cr = static_cast<TH1*>(fJECUp->Get("cr_counts"));
-    TH1 *hFluctDn_cr = static_cast<TH1*>(fJECDn->Get("cr_counts"));
-    TH1 *hFluctNom_cr = static_cast<TH1*>(fJECNom->Get("cr_counts"));
-    TH1 *hFluctUp_sr = static_cast<TH1*>(fJECUp->Get("sr_counts"));
-    TH1 *hFluctDn_sr = static_cast<TH1*>(fJECDn->Get("sr_counts"));
-    TH1 *hFluctNom_sr = static_cast<TH1*>(fJECNom->Get("sr_counts"));
+    TH1 *hFluctUp_cr = static_cast<TH1*>(fJECUp->Get("cr_yield"));
+    TH1 *hFluctDn_cr = static_cast<TH1*>(fJECDn->Get("cr_yield"));
+    TH1 *hFluctNom_cr = static_cast<TH1*>(fJECNom->Get("cr_yield"));
+    TH1 *hFluctUp_sr = static_cast<TH1*>(fJECUp->Get("sr_yield"));
+    TH1 *hFluctDn_sr = static_cast<TH1*>(fJECDn->Get("sr_yield"));
+    TH1 *hFluctNom_sr = static_cast<TH1*>(fJECNom->Get("sr_yield"));
 
     //calculate the central prediction
     TH1 *tFactors = (TH1*)hFluctNom_sr->Clone("tFactors");
     tFactors->Divide(hFluctNom_cr);
-    TH1 *centralPred = (TH1*)cr_counts->Clone("counts");
+    TH1 *centralPred = (TH1*)cr_yield->Clone("yield");
     centralPred->Multiply(tFactors);
 
     for(int iBin = 1; iBin <= 6; ++iBin)
@@ -34,13 +34,13 @@ void llSystematics ()
         std::cout << "iBin: " << iBin << std::endl;
 
         //extrating the counts
-        const double data_mu = cr_counts->GetBinContent(iBin);
-        std::cout<<"cr counts: "<<data_mu<<std::endl;
+        const double data_mu = cr_yield->GetBinContent(iBin);
+        std::cout<<"cr yield: "<<data_mu<<std::endl;
         std::cout<<"tFactor: " << tFactors->GetBinContent(iBin)<<std::endl;
         std::cout<<"central prediction "<<centralPred->GetBinContent(iBin)<<std::endl;
     
-        double err_low = cr_counts->GetBinErrorLow(iBin);
-        double err_up = cr_counts->GetBinErrorUp(iBin);
+        double err_low = cr_yield->GetBinErrorLow(iBin);
+        double err_up = cr_yield->GetBinErrorUp(iBin);
         std::cout<<"Systematics "<< err_up <<", "<< err_low << " Central value "<< data_mu << std::endl;
 
         double jecFluctUp_cr  = hFluctUp_cr->GetBinContent(iBin);

@@ -80,6 +80,9 @@ void SimpleAnalyzer::Loop(double weight, int maxevents, bool isQuiet, bool isFas
           *recoJetsBtag_slimmed,
           *qgLikelihood_slimmed
           );
+      AK4Inputs.addSupplamentalVector("qgPtD",    *qgPtD_slimmed);
+      AK4Inputs.addSupplamentalVector("qgAxis2",  *qgAxis2_slimmed);
+      AK4Inputs.addSupplamentalVector("qgMult",   *qgMult_slimmed); 
     
       // Create AK8 inputs object
       ttUtility::ConstAK8Inputs<double> AK8Inputs = ttUtility::ConstAK8Inputs<double>(

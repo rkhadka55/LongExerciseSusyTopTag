@@ -1,9 +1,10 @@
 #define LostLeptonBackground_cxx
 #include "LostLeptonBackground.h"
 
-#include<map>
-#include<string>
-#include<iostream>
+#include <map>
+#include <string>
+#include <iostream>
+#include <cmath>
 
 #include <TH2.h>
 #include <TH1D.h>
@@ -11,6 +12,8 @@
 #include <TCanvas.h>
 
 #include "Math/QuantFuncMathCore.h"
+#include "Math/VectorUtil.h"
+
 //mandatory includes to use top tagger
 #include "TopTagger/TopTagger/interface/TopTagger.h"
 #include "TopTagger/TopTagger/interface/TopTaggerResults.h"
@@ -101,16 +104,33 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
             }
         }
 
+        // Make MET into a TLorentzVector
+        TLorentzVector metLV;
+        metLV.SetPtEtaPhiM(met, 0, metphi, 0);
+
+        // Calculate mT
+        TLorentzVector *lvec = nullptr;
+        if(cutMuVec->size())
+        {
+            lvec = &cutMuVec->at(0);
+        }
+        else if(cutElecVec->size())
+        {
+            lvec = &cutElecVec->at(0);
+        }
+        double deltaPhi = (lvec != nullptr)?(ROOT::Math::VectorUtil::DeltaPhi(*lvec, metLV)):0.0;
+        double mT = (lvec != nullptr)?(sqrt(2*lvec->Pt()*metLV.Pt()*(1-cos(deltaPhi)))):0.0;
+
         // ----------------------------
         // --- Apply some selection ---
         // ----------------------------
 
-        bool passnJetRequirement = nJet_50>2 && nJet_30>4;
+        bool passnJetRequirement = nJet_50>=2 && nJet_30>=4;
         bool search_region  = passNoiseEventFilter && passSearchTrigger && passnJetRequirement && passdPhis
             && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets && HT_updated > 300;
         //The control region replaces the lepton veto with an explicit selection of exactly 1 electron xor muon
         bool control_region = passNoiseEventFilter && passSearchTrigger && passnJetRequirement && passdPhis
-            && (cutMuVec->size() == 1 || cutElecVec->size() == 1) && passBJets && HT_updated > 300;
+            && ((cutMuVec->size() + cutElecVec->size()) == 1) && (mT < 100) && passBJets && HT_updated > 300;
 
         if(!(search_region || control_region)) continue;
 
@@ -125,6 +145,9 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
             *recoJetsBtag_slimmed,
             *qgLikelihood_slimmed
             );
+        AK4Inputs.addSupplamentalVector("qgPtD",    *qgPtD_slimmed);
+        AK4Inputs.addSupplamentalVector("qgAxis2",  *qgAxis2_slimmed);
+        AK4Inputs.addSupplamentalVector("qgMult",   *qgMult_slimmed); 
     
         // Create AK8 inputs object
         ttUtility::ConstAK8Inputs<double> AK8Inputs = ttUtility::ConstAK8Inputs<double>(
@@ -150,9 +173,6 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
         const std::vector<TopObject*>& tops = ttr.getTops();
       
         int ntop = tops.size();
-        // Make MET into a TLorentzVector
-        TLorentzVector metLV;
-        metLV.SetPtEtaPhiM(met, 0, metphi, 0);
 
         double mt2 = ttUtility::calculateMT2(ttr, metLV);
 

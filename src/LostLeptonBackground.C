@@ -12,9 +12,9 @@
 
 #include "Math/QuantFuncMathCore.h"
 //mandatory includes to use top tagger
-#include "TopTagger/TopTagger/include/TopTagger.h"
-#include "TopTagger/TopTagger/include/TopTaggerResults.h"
-#include "TopTagger/TopTagger/include/TopTaggerUtilities.h"
+#include "TopTagger/TopTagger/interface/TopTagger.h"
+#include "TopTagger/TopTagger/interface/TopTaggerResults.h"
+#include "TopTagger/TopTagger/interface/TopTaggerUtilities.h"
 #include "TopTagger/CfgParser/include/TTException.h"
 
 void LostLeptonBackground::InitHistos()
@@ -120,14 +120,14 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
         //
         // Use helper function to create input list 
         // Create AK4 inputs object
-        ttUtility::ConstAK4Inputs AK4Inputs = ttUtility::ConstAK4Inputs(
+        ttUtility::ConstAK4Inputs<double> AK4Inputs = ttUtility::ConstAK4Inputs<double>(
             jetsLVec,
             *recoJetsBtag_slimmed,
             *qgLikelihood_slimmed
             );
     
         // Create AK8 inputs object
-        ttUtility::ConstAK8Inputs AK8Inputs = ttUtility::ConstAK8Inputs(
+        ttUtility::ConstAK8Inputs<double> AK8Inputs = ttUtility::ConstAK8Inputs<double>(
             *puppiJetsLVec_slimmed,
             *puppitau1_slimmed,
             *puppitau2_slimmed,

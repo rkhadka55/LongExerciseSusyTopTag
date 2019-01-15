@@ -319,5 +319,4 @@ int main()
 
     plt.plot("HT", "H_{T} [GeV]", "Events", true, -1, -1, 5);
     plt.plot("Nt", "N_{T}");
-    plt.plot("counts", "bins", "Events", true);
 }

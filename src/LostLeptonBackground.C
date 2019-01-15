@@ -4,14 +4,12 @@
 #include <map>
 #include <string>
 #include <iostream>
-#include <cmath>
 
 #include <TH2.h>
 #include <TH1D.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 
-#include "Math/QuantFuncMathCore.h"
 #include "Math/VectorUtil.h"
 
 //mandatory includes to use top tagger
@@ -108,19 +106,6 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
         TLorentzVector metLV;
         metLV.SetPtEtaPhiM(met, 0, metphi, 0);
 
-        // Calculate mT
-        TLorentzVector *lvec = nullptr;
-        if(cutMuVec->size())
-        {
-            lvec = &cutMuVec->at(0);
-        }
-        else if(cutElecVec->size())
-        {
-            lvec = &cutElecVec->at(0);
-        }
-        double deltaPhi = (lvec != nullptr)?(ROOT::Math::VectorUtil::DeltaPhi(*lvec, metLV)):0.0;
-        double mT = (lvec != nullptr)?(sqrt(2*lvec->Pt()*metLV.Pt()*(1-cos(deltaPhi)))):0.0;
-
         // ----------------------------
         // --- Apply some selection ---
         // ----------------------------
@@ -130,7 +115,7 @@ void LostLeptonBackground::Loop(double weight, int maxevents=-1, int systematics
             && passMuonVeto && passIsoTrkVeto && passEleVeto && passBJets && HT_updated > 300;
         //The control region replaces the lepton veto with an explicit selection of exactly 1 electron xor muon
         bool control_region = passNoiseEventFilter && passSearchTrigger && passnJetRequirement && passdPhis
-            && ((cutMuVec->size() + cutElecVec->size()) == 1) && (mT < 100) && passBJets && HT_updated > 300;
+            && ((cutMuVec->size() + cutElecVec->size()) == 1) && passBJets && HT_updated > 300;
 
         if(!(search_region || control_region)) continue;
 

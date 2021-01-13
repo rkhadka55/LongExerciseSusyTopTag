@@ -1,5 +1,5 @@
 #define SimpleAnalyzer_cxx
-#include "SimpleAnalyzer.h"
+#include "TopTagger/CfgParser/include/TTException.h"
 
 #include<map>
 #include<string>

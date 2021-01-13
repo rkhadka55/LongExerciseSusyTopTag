@@ -1,5 +1,5 @@
 #define LostLeptonBackground_cxx
-#include "LostLeptonBackground.h"
+#include "TopTagger/CfgParser/interface/TTException.h"
 
 #include <map>
 #include <string>
